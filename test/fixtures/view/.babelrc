@@ -1,0 +1,13 @@
+{
+  "plugins": [
+    [
+      "babel-plugin-syntax-jsx"
+    ],
+    [
+      "../../../src",
+      {
+        "namespace": "sample.ui"
+      }
+    ]
+  ]
+}

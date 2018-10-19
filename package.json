@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "description": "Next-generation syntax for SAP UI5",
+  "repository": "Soontao/babel-plugin-ui5-next",
+  "author": "Theo Sun <theo.sun@sap.com>",
+  "main": "lib/index.js",
+  "devDependencies": {
+    "@commitlint/cli": "^7.0.0",
+    "@commitlint/config-conventional": "^7.0.1",
+    "standard-version": "^4.4.0",
+    "babel-cli": "^6.4.5",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-stage-0": "^6.3.13",
+    "babel-plugin-syntax-jsx": "^6.18.0",
+    "mocha": "^2.2.5"
+  },
+  "dependencies": {
+    "lodash": "^4.17.11"
+  },
+  "scripts": {
+    "clean": "rm -rf lib",
+    "build": "babel src -d lib",
+    "test": "mocha --compilers js:babel-register",
+    "test:watch": "npm run test -- --watch",
+    "prepublish": "npm run clean && npm run build",
+    "release": "standard-version --commit-all --no-verify && git push --follow-tags origin master&&npm publish",
+    "commitmsg": "commitlint -E GIT_PARAMS"
+  },
+  "keywords": [
+    "UI",
+    "5",
+    "babel",
+    "plugin",
+    "Open",
+    "babel-plugin"
+  ],
+  "license": "MIT"
+}

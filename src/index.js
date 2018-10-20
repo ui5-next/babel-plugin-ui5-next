@@ -1,5 +1,5 @@
 import Path from "path";
-import { concat, split, slice, join, filter, find, flatten, map, isEmpty, trim } from "lodash";
+import { concat, split, slice, join, filter, find, flatten, map, isEmpty, trim, forEach } from "lodash";
 
 export default function ({ types: t }) {
 
@@ -321,10 +321,14 @@ export default function ({ types: t }) {
         const state = path.state.ui5;
         const node = path.node;
         const props = [];
+        /**
+         * current class extends super name
+         */
         var superClassName = node.superClass.name;
         var fullClassName = "";
         var className = node.id.name;
         var expression = {};
+        var haveDefinedGetControllerName = false;
 
         if (state.namespace) {
           fullClassName = state.namespace;
@@ -332,29 +336,34 @@ export default function ({ types: t }) {
           fullClassName = node.id.name;
         }
 
-        node.body.body.forEach(member => {
+        forEach(node.body.body, member => {
           if (member.type === "ClassMethod") {
             const func = t.functionExpression(null, member.params, member.body);
             func.generator = member.generator;
             func.async = member.async;
             props.push(t.objectProperty(member.key, func));
+            if (member.key.name == "getControllerName") {
+              haveDefinedGetControllerName = true;
+            }
           } else if (member.type == "ClassProperty") {
             props.push(t.objectProperty(member.key, member.value));
           }
-        });
+        })
 
         switch (superClassName) {
           case "JSView":
-            props.push(
-              t.objectProperty(
-                t.identifier("getControllerName"),
-                t.functionExpression(
-                  null,
-                  [],
-                  t.blockStatement([t.returnStatement(t.stringLiteral(fullClassName))])
+            if (!haveDefinedGetControllerName) {
+              props.push(
+                t.objectProperty(
+                  t.identifier("getControllerName"),
+                  t.functionExpression(
+                    null,
+                    [],
+                    t.blockStatement([t.returnStatement(t.stringLiteral(fullClassName))])
+                  )
                 )
-              )
-            );
+              );
+            }
             expression = t.logicalExpression(
               "||",
               t.callExpression(t.identifier("sap.ui.jsview"), [

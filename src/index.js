@@ -58,6 +58,7 @@ exports.default = ({ types: t }) => {
   const visitor = {
 
     Program: {
+
       /**
        * init with path related informations
        */
@@ -94,6 +95,7 @@ exports.default = ({ types: t }) => {
           imports: []
         };
       },
+
       /**
        * convert amd to ui5 module system
        */
@@ -122,6 +124,21 @@ exports.default = ({ types: t }) => {
           )
         );
 
+        var body = path.node.body;
+
+        // fix native ui5 module define
+        if (body.length == 1 && body[0].type == "ExpressionStatement") {
+          var callExpression = body[0].expression;
+          if (callExpression.type == "CallExpression") {
+            body[0].expression = t.assignmentExpression(
+              "=",
+              _default,
+              body[0].expression
+            );
+          }
+
+        }
+
         const defineCallArgs = [
           fileAbsPath,
           t.arrayExpression(importsSources),
@@ -138,7 +155,7 @@ exports.default = ({ types: t }) => {
                     )
                   ]
                 ),
-                path.node.body, // original body
+                body, // original body
                 t.returnStatement(_default)
               )
             )

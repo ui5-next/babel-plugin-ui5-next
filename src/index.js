@@ -1,14 +1,13 @@
-import Path from "path";
-import { concat, split, slice, join, filter, find, flatten, map, isEmpty, trim, forEach } from "lodash";
-
-export default function ({ types: t }) {
+const Path = require("path");
+const { concat, split, slice, join, filter, find, flatten, map, isEmpty, trim, forEach } = require("lodash");
+exports.default = ({ types: t }) => {
 
   /**
    * Get extension name from path
-   * 
+   *
    * Test.controller.js > .controller.js
-   * 
-   * @param {string} path 
+   *
+   * @param {string} path
    */
   const extensionName = (path) => {
     var r = join(slice(split(path, "."), 1), ".");
@@ -20,7 +19,7 @@ export default function ({ types: t }) {
 
   /**
    * Get the source code root path string
-   * 
+   *
    * @param {Object} path babel path object
    */
   const getSourceRoot = (path) => {
@@ -36,7 +35,7 @@ export default function ({ types: t }) {
 
   /**
    * Get expression with style attached
-   * 
+   *
    * @param {string} classes ui5 class style string
    * @param {Object} expression input expression
    */
@@ -63,7 +62,7 @@ export default function ({ types: t }) {
        * init with path related informations
        */
       enter: (path, state) => {
-        var { namespace } = state.opts
+        var { namespace } = state.opts;
         const filePath = Path.resolve(path.hub.file.opts.filename);
 
         const sourceRootPath = getSourceRoot(path);
@@ -78,20 +77,20 @@ export default function ({ types: t }) {
           relativeFilePath = Path.relative(sourceRootPath, filePath);
           relativeFilePathWithoutExtension = Path.dirname(relativeFilePath) + Path.sep + Path.basename(relativeFilePath, extensionName(relativeFilePath));
           relativeFilePathWithoutExtension = relativeFilePathWithoutExtension.replace(/\\/g, "/");
-          namepath = Path.join(namepath, relativeFilePathWithoutExtension).replace(/\\/g, "/");
-          // not root file
-          namespace = namepath.replace(/\//g, ".");
         }
-
-        namepath = namepath.replace(/\\/g, "/");
 
         if (!path.state) {
           path.state = {};
         }
+        let modulepath = Path.join(namepath, relativeFilePathWithoutExtension).replace(/\\/g, "/");
+        let moduleFullName = modulepath.replace(/\//g, ".");
 
         path.state.ui5 = {
           namespace,
           namepath,
+          relativeFilePathWithoutExtension,
+          modulepath,
+          moduleFullName,
           imports: []
         };
       },
@@ -99,8 +98,8 @@ export default function ({ types: t }) {
        * convert amd to ui5 module system
        */
       exit: path => {
-        const { imports, namepath } = path.state.ui5;
-        const fileAbsPath = t.stringLiteral(namepath);
+        const { imports, namepath, relativeFilePathWithoutExtension } = path.state.ui5;
+        const fileAbsPath = t.stringLiteral(Path.join(namepath, relativeFilePathWithoutExtension).replace(/\\/g, "/"));
 
         const importsIdentifier = imports.map(i => t.identifier(i.name));
         const importsSources = imports.map(i => t.stringLiteral(i.src));
@@ -232,22 +231,24 @@ export default function ({ types: t }) {
     ImportDeclaration: {
       enter: path => {
         const state = path.state.ui5;
-        const { namepath } = state;
+        const {
+          /** current file path */
+          relativeFilePathWithoutExtension,
+          /**project name path */
+          namepath
+        } = state;
         const node = path.node;
 
         var name = "";
 
-        let src = node.source.value;
+        let src = node.source.value; // related path in import statment
         if (src.startsWith("./") || src.startsWith("../") || !src.startsWith("sap")) {
           try {
-            const sourceRootPath = getSourceRoot(path);
             src = Path.join(
               namepath,
-              Path.relative(
-                sourceRootPath,
-                Path.resolve(Path.dirname(path.hub.file.opts.filename), src)
-              )
-            ).replace(/\\/g, "");
+              Path.dirname(relativeFilePathWithoutExtension),
+              src
+            ).replace(/\\/g, "/");
           } catch (e) {
             // pass
           }
@@ -312,7 +313,7 @@ export default function ({ types: t }) {
 
     /**
      * convert ES6 class defination to UI5 class defination
-     * 
+     *
      * class A extens B {} > B.extend("A", {})
      */
     ClassDeclaration: {
@@ -330,8 +331,8 @@ export default function ({ types: t }) {
         var expression = {};
         var haveDefinedGetControllerName = false;
 
-        if (state.namespace) {
-          fullClassName = state.namespace;
+        if (state.moduleFullName) {
+          fullClassName = state.moduleFullName;
         } else {
           fullClassName = node.id.name;
         }
@@ -348,7 +349,7 @@ export default function ({ types: t }) {
           } else if (member.type == "ClassProperty") {
             props.push(t.objectProperty(member.key, member.value));
           }
-        })
+        });
 
         switch (superClassName) {
           case "JSView":
@@ -455,3 +456,5 @@ export default function ({ types: t }) {
     visitor: visitor
   };
 };
+
+module.exports = exports.default;

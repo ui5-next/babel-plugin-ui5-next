@@ -25,7 +25,8 @@
     "test:watch": "npm run test -- --watch",
     "prepublish": "npm run clean && npm run build",
     "release": "standard-version --commit-all --no-verify && git push --follow-tags origin master&&npm publish",
-    "commitmsg": "commitlint -E GIT_PARAMS"
+    "commitmsg": "commitlint -E GIT_PARAMS",
+    "precommit": "npm run build"
   },
   "keywords": [
     "UI",

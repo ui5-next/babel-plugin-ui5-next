@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Next-generation syntax for SAP UI5",
   "repository": "Soontao/babel-plugin-ui5-next",
   "author": "Theo Sun <theo.sun@sap.com>",

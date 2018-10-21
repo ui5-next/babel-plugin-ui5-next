@@ -1,5 +1,7 @@
 const Path = require("path");
-const { concat, split, slice, join, filter, find, flatten, map, isEmpty, trim, forEach } = require("lodash");
+const { concat, split, slice, join, filter, find, flatten, map, isEmpty, trim, forEach, replace } = require("lodash");
+const { readFileSync } = require("fs");
+
 exports.default = ({ types: t }) => {
 
   /**
@@ -15,6 +17,22 @@ exports.default = ({ types: t }) => {
       return `.${r}`;
     }
     return r;
+  };
+
+  const getFilePathWithCurrentFileAndRelativePath = (currentFileAbsPath = "", targetRelativePath = "") => {
+    return Path.join(Path.dirname(currentFileAbsPath), targetRelativePath);
+  };
+
+  const getSourceCodeByPath = (path) => {
+    return readFileSync(path, { encoding: "utf8" });
+  };
+
+  const isJSViewDefination = (str = "") => {
+    return /class.*?extends.*?JSView/.test(str);
+  };
+
+  const removeViewOrController = (str = "") => {
+    return replace(str, /\.(controller|view)$/g, "");
   };
 
   /**
@@ -103,13 +121,14 @@ exports.default = ({ types: t }) => {
         const { imports, namepath, relativeFilePathWithoutExtension } = path.state.ui5;
         const fileAbsPath = t.stringLiteral(Path.join(namepath, relativeFilePathWithoutExtension).replace(/\\/g, "/"));
 
-        const importsIdentifier = imports.map(i => t.identifier(i.name));
-        const importsSources = imports.map(i => t.stringLiteral(i.src));
+        // remove JSView import in import statment
+        const importsIdentifier = filter(imports, { isView: false }).map(i => t.identifier(i.name));
+        const importsSources = filter(imports, { isView: false }).map(i => t.stringLiteral(i.src));
         const _default = t.identifier("_default");
 
         const importExtractVars = flatten(
           map(
-            filter(imports, i => i.specifiers.length > 0),
+            filter(filter(imports, { isView: false }), i => i.specifiers.length > 0),
             i => i.specifiers.map(
               s => t.variableDeclaration(
                 "var",
@@ -188,12 +207,29 @@ exports.default = ({ types: t }) => {
      * parse JSX elements to UI5 construction
      */
     JSXElement: {
+
       exit: path => {
+
+        var { imports } = path.state.ui5;
+
+
         // get jsx element type
-        const tag = path.node.openingElement.name.name;
+        var tag = path.node.openingElement.name.name;
+
+        var viewName = "";
+
+        var viewImport = find(imports, { name: tag, isView: true });
+
+        // if element is a View subclass
+        if (viewImport) {
+          tag = "JSView";
+          // replace path to name
+          viewName = removeViewOrController(viewImport.src.replace(/\//g, "."));
+        }
+
         var classes = [];
         // map attrs to object property
-        const props = path.node.openingElement.attributes.map(p => {
+        var props = path.node.openingElement.attributes.map(p => {
           if (p.name.name == "class") {
             classes = concat(classes, split(p.value.value, " "));
           }
@@ -219,8 +255,20 @@ exports.default = ({ types: t }) => {
 
         });
 
+
+        // with children elements
         if (children && children.length > 0) {
           props.push(t.objectProperty(t.identifier("content"), t.arrayExpression(children)));
+        }
+
+        // if this element is JSView element
+        if (viewName) {
+
+          props = [
+            t.objectProperty(t.identifier("viewData"), t.objectExpression(props)),
+            t.objectProperty(t.identifier("viewName"), t.stringLiteral(viewName))
+          ];
+
         }
 
         // < inner children
@@ -247,25 +295,45 @@ exports.default = ({ types: t }) => {
      */
     ImportDeclaration: {
       enter: path => {
+        const currentFileAbsPath = path.hub.file.opts.filename;
         const state = path.state.ui5;
+
         const {
           /** current file path */
           relativeFilePathWithoutExtension,
           /**project name path */
           namepath
         } = state;
+
         const node = path.node;
 
         var name = "";
 
-        let src = node.source.value; // related path in import statment
+        var isViewImport = false;
+
+        var src = node.source.value; // related path in import statment
+
+        // is related source or third party lib
         if (src.startsWith("./") || src.startsWith("../") || !src.startsWith("sap")) {
           try {
-            src = Path.join(
-              namepath,
-              Path.dirname(relativeFilePathWithoutExtension),
-              src
-            ).replace(/\\/g, "/");
+            var sourcePath = getFilePathWithCurrentFileAndRelativePath(currentFileAbsPath, src);
+            var importedSource = getSourceCodeByPath(`${sourcePath}.js`);
+
+            if (isJSViewDefination(importedSource)) {
+              isViewImport = true;
+              // if not import sap.ui.core.mvc.JSView before
+              if (isEmpty(find(state.imports, { name: "JSView" }))) {
+                state.imports.push({
+                  src: "sap/ui/core/mvc/JSView",
+                  specifiers: [],
+                  name: "JSView",
+                  isView: false
+                });
+              }
+            }
+
+            src = Path.join(namepath, Path.dirname(relativeFilePathWithoutExtension), src).replace(/\\/g, "/");
+
           } catch (e) {
             // pass
           }
@@ -282,12 +350,12 @@ exports.default = ({ types: t }) => {
           name = _defaultSpecifier.local.name;
         }
 
-        const imp = {
-          src: src.replace(/\\/g, "/"),
+        state.imports.push({
+          src,
           specifiers: _normalSpecifiers || [],
-          name
-        };
-        state.imports.push(imp);
+          name,
+          isView: isViewImport
+        });
 
         path.remove();
       }
@@ -377,11 +445,13 @@ exports.default = ({ types: t }) => {
                   t.functionExpression(
                     null,
                     [],
-                    t.blockStatement([t.returnStatement(t.stringLiteral(fullClassName))])
+                    t.blockStatement([t.returnStatement(t.stringLiteral("sap.ui.core.mvc.Controller"))])
                   )
                 )
               );
+
             }
+
             expression = t.logicalExpression(
               "||",
               t.callExpression(t.identifier("sap.ui.jsview"), [

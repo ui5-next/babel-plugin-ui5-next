@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/Soontao/babel-plugin-ui5-next/compare/v1.1.4...v1.2.0) (2018-10-21)
+
+
+### Features
+
+* **jsview:** JSX Element Support ([709241f](https://github.com/Soontao/babel-plugin-ui5-next/commit/709241f))
+
+
+
 <a name="1.1.4"></a>
 ## [1.1.4](https://github.com/Soontao/babel-plugin-ui5-next/compare/v1.1.3...v1.1.4) (2018-10-20)
 

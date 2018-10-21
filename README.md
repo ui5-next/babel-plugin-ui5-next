@@ -1,51 +1,16 @@
 # babel-plugin-ui5-next
 
+![](https://openui5.org/images/OpenUI5_new_big_side.png)
+
 Next-generation syntax for SAP UI5
 
-## Example
+## Function
 
-**In**
-
-```js
-// input code
-```
-
-**Out**
-
-```js
-"use strict";
-
-// output code
-```
-
-## Installation
-
-```sh
-$ npm install babel-plugin-ui5-next
-```
+* Convert ES6 class to UI5 class system
+* Convert ES6 module system to UI5 module system
+* Enhance `JSView` logic in import/export
+* `JSX` syntax support
 
 ## Usage
 
-### Via `.babelrc` (Recommended)
-
-**.babelrc**
-
-```json
-{
-  "plugins": ["ui5-next"]
-}
-```
-
-### Via CLI
-
-```sh
-$ babel --plugins ui-5-next script.js
-```
-
-### Via Node API
-
-```javascript
-require("babel-core").transform("code", {
-  plugins: ["ui5-next"]
-});
-```
+Please `DONT` use this plugin directly, just use [the generator](https://github.com/Soontao/ui5g) to generate UI5 project with predefined config.

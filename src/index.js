@@ -2,8 +2,8 @@ const Path = require("path");
 const { concat, split, slice, join, filter, find, flatten, map, isEmpty, trim, forEach, replace } = require("lodash");
 const { readFileSync } = require("fs");
 
-exports.default = ({ types: t }) => {
-
+exports.default = (babel) => {
+  const { types: t } = babel;
   /**
    * Get extension name from path
    *
@@ -118,6 +118,9 @@ exports.default = ({ types: t }) => {
        * convert amd to ui5 module system
        */
       exit: path => {
+        if (path.hub.file.code.startsWith("sap.ui.define")) {
+          return;
+        }
         const { imports, namepath, relativeFilePathWithoutExtension } = path.state.ui5;
         const fileAbsPath = t.stringLiteral(Path.join(namepath, relativeFilePathWithoutExtension).replace(/\\/g, "/"));
 
@@ -149,14 +152,19 @@ exports.default = ({ types: t }) => {
         if (body.length == 1 && body[0].type == "ExpressionStatement") {
           var callExpression = body[0].expression;
           if (callExpression.type == "CallExpression") {
-            body[0].expression = t.assignmentExpression(
-              "=",
-              _default,
-              body[0].expression
-            );
+            // body[0].expression = t.assignmentExpression(
+            //   "=",
+            //   _default,
+            //   body[0].expression
+            // );
+            return;
           }
 
+        } else {
+          body = map(body, c => c.type == "CallExpression" ? t.expressionStatement(c) : c);
         }
+
+
 
         const defineCallArgs = [
           fileAbsPath,
@@ -235,10 +243,10 @@ exports.default = ({ types: t }) => {
           }
           var id = t.identifier(p.name.name);
           switch (p.value.type) {
-            case "JSXExpressionContainer":
-              return t.objectProperty(id, p.value.expression);
-            default:
-              return t.objectProperty(id, p.value);
+          case "JSXExpressionContainer":
+            return t.objectProperty(id, p.value.expression);
+          default:
+            return t.objectProperty(id, p.value);
           }
 
         }) || [];
@@ -247,10 +255,10 @@ exports.default = ({ types: t }) => {
         const children = filter(path.node.children, c => {
 
           switch (c.type) {
-            case "NewExpression": case "CallExpression":
-              return true;
-            default:
-              return false;
+          case "NewExpression": case "CallExpression":
+            return true;
+          default:
+            return false;
           }
 
         });
@@ -366,29 +374,29 @@ exports.default = ({ types: t }) => {
         const _default = t.identifier("_default");
         var assign;
         switch (path.node.type) {
-          case "ExportDefaultDeclaration":
-            assign = t.assignmentExpression(
-              "=",
-              _default,
-              t.callExpression(
-                t.memberExpression(
-                  t.identifier("Object"), t.identifier("assign")),
-                [path.node.declaration, _default]
-              )
-            );
-            break;
-          case "ExportNamedDeclaration":
-            assign = t.assignmentExpression(
-              "=",
+        case "ExportDefaultDeclaration":
+          assign = t.assignmentExpression(
+            "=",
+            _default,
+            t.callExpression(
               t.memberExpression(
-                _default,
-                path.node.declaration.declarations[0].id
-              ),
-              path.node.declaration.declarations[0].init
-            );
-            break;
-          default:
-            break;
+                t.identifier("Object"), t.identifier("assign")),
+              [path.node.declaration, _default]
+            )
+          );
+          break;
+        case "ExportNamedDeclaration":
+          assign = t.assignmentExpression(
+            "=",
+            t.memberExpression(
+              _default,
+              path.node.declaration.declarations[0].id
+            ),
+            path.node.declaration.declarations[0].init
+          );
+          break;
+        default:
+          break;
         }
         if (assign) {
           path.replaceWith(assign);
@@ -437,47 +445,47 @@ exports.default = ({ types: t }) => {
         });
 
         switch (superClassName) {
-          case "JSView":
-            if (!haveDefinedGetControllerName) {
-              props.push(
-                t.objectProperty(
-                  t.identifier("getControllerName"),
-                  t.functionExpression(
-                    null,
-                    [],
-                    t.blockStatement([t.returnStatement(t.stringLiteral("sap.ui.core.mvc.Controller"))])
-                  )
+        case "JSView":
+          if (!haveDefinedGetControllerName) {
+            props.push(
+              t.objectProperty(
+                t.identifier("getControllerName"),
+                t.functionExpression(
+                  null,
+                  [],
+                  t.blockStatement([t.returnStatement(t.stringLiteral("sap.ui.core.mvc.Controller"))])
                 )
-              );
-
-            }
-
-            expression = t.logicalExpression(
-              "||",
-              t.callExpression(t.identifier("sap.ui.jsview"), [
-                t.stringLiteral(fullClassName),
-                t.objectExpression(props)
-              ]),
-              t.objectExpression([])
-            );
-            break;
-          case "Fragment":
-            expression = t.logicalExpression(
-              "||",
-              t.callExpression(t.identifier("sap.ui.jsfragment"), [
-                t.stringLiteral(fullClassName),
-                t.objectExpression(props)
-              ]),
-              t.objectExpression([])
+              )
             );
 
-            break;
-          default:
-            expression = t.callExpression(t.identifier(superClassName + ".extend"), [
+          }
+
+          expression = t.logicalExpression(
+            "||",
+            t.callExpression(t.identifier("sap.ui.jsview"), [
               t.stringLiteral(fullClassName),
               t.objectExpression(props)
-            ]);
-            break;
+            ]),
+            t.objectExpression([])
+          );
+          break;
+        case "Fragment":
+          expression = t.logicalExpression(
+            "||",
+            t.callExpression(t.identifier("sap.ui.jsfragment"), [
+              t.stringLiteral(fullClassName),
+              t.objectExpression(props)
+            ]),
+            t.objectExpression([])
+          );
+
+          break;
+        default:
+          expression = t.callExpression(t.identifier(superClassName + ".extend"), [
+            t.stringLiteral(fullClassName),
+            t.objectExpression(props)
+          ]);
+          break;
         }
 
 

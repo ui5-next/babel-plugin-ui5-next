@@ -239,7 +239,7 @@ exports.default = (babel) => {
 
         // map attrs to object property
 
-        var props = reduce(path.node.openingElement.attributes, (pre, cur) => {
+        var props = reduce(path.node.openingElement.attributes, (pre, p) => {
           if (p.name.name == "class") {
 
             classes = concat(classes, split(p.value.value, " "));

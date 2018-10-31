@@ -1,5 +1,5 @@
 const Path = require("path");
-const { concat, split, slice, join, filter, find, flatten, map, isEmpty, trim, forEach, replace } = require("lodash");
+const { concat, split, slice, join, filter, find, flatten, map, isEmpty, trim, forEach, replace, reduce } = require("lodash");
 const { readFileSync } = require("fs");
 
 exports.default = (babel) => {
@@ -236,29 +236,38 @@ exports.default = (babel) => {
         }
 
         var classes = [];
-        // map attrs to object property
-        var props = path.node.openingElement.attributes.map(p => {
-          if (p.name.name == "class") {
-            classes = concat(classes, split(p.value.value, " "));
-          }
-          var id = t.identifier(p.name.name);
-          switch (p.value.type) {
-          case "JSXExpressionContainer":
-            return t.objectProperty(id, p.value.expression);
-          default:
-            return t.objectProperty(id, p.value);
-          }
 
-        }) || [];
+        // map attrs to object property
+
+        var props = reduce(path.node.openingElement.attributes, (pre, cur) => {
+          if (p.name.name == "class") {
+
+            classes = concat(classes, split(p.value.value, " "));
+
+          } else {
+
+            var id = t.identifier(p.name.name);
+
+            switch (p.value.type) {
+              case "JSXExpressionContainer":
+                pre.push(t.objectProperty(id, p.value.expression))
+              default:
+                pre.push(t.objectProperty(id, p.value))
+            }
+
+          }
+          return pre
+
+        }, []);
 
         // > inner children
         const children = filter(path.node.children, c => {
 
           switch (c.type) {
-          case "NewExpression": case "CallExpression":
-            return true;
-          default:
-            return false;
+            case "NewExpression": case "CallExpression":
+              return true;
+            default:
+              return false;
           }
 
         });
@@ -374,29 +383,29 @@ exports.default = (babel) => {
         const _default = t.identifier("_default");
         var assign;
         switch (path.node.type) {
-        case "ExportDefaultDeclaration":
-          assign = t.assignmentExpression(
-            "=",
-            _default,
-            t.callExpression(
-              t.memberExpression(
-                t.identifier("Object"), t.identifier("assign")),
-              [path.node.declaration, _default]
-            )
-          );
-          break;
-        case "ExportNamedDeclaration":
-          assign = t.assignmentExpression(
-            "=",
-            t.memberExpression(
+          case "ExportDefaultDeclaration":
+            assign = t.assignmentExpression(
+              "=",
               _default,
-              path.node.declaration.declarations[0].id
-            ),
-            path.node.declaration.declarations[0].init
-          );
-          break;
-        default:
-          break;
+              t.callExpression(
+                t.memberExpression(
+                  t.identifier("Object"), t.identifier("assign")),
+                [path.node.declaration, _default]
+              )
+            );
+            break;
+          case "ExportNamedDeclaration":
+            assign = t.assignmentExpression(
+              "=",
+              t.memberExpression(
+                _default,
+                path.node.declaration.declarations[0].id
+              ),
+              path.node.declaration.declarations[0].init
+            );
+            break;
+          default:
+            break;
         }
         if (assign) {
           path.replaceWith(assign);
@@ -445,47 +454,47 @@ exports.default = (babel) => {
         });
 
         switch (superClassName) {
-        case "JSView":
-          if (!haveDefinedGetControllerName) {
-            props.push(
-              t.objectProperty(
-                t.identifier("getControllerName"),
-                t.functionExpression(
-                  null,
-                  [],
-                  t.blockStatement([t.returnStatement(t.stringLiteral("sap.ui.core.mvc.Controller"))])
+          case "JSView":
+            if (!haveDefinedGetControllerName) {
+              props.push(
+                t.objectProperty(
+                  t.identifier("getControllerName"),
+                  t.functionExpression(
+                    null,
+                    [],
+                    t.blockStatement([t.returnStatement(t.stringLiteral("sap.ui.core.mvc.Controller"))])
+                  )
                 )
-              )
+              );
+
+            }
+
+            expression = t.logicalExpression(
+              "||",
+              t.callExpression(t.identifier("sap.ui.jsview"), [
+                t.stringLiteral(fullClassName),
+                t.objectExpression(props)
+              ]),
+              t.objectExpression([])
+            );
+            break;
+          case "Fragment":
+            expression = t.logicalExpression(
+              "||",
+              t.callExpression(t.identifier("sap.ui.jsfragment"), [
+                t.stringLiteral(fullClassName),
+                t.objectExpression(props)
+              ]),
+              t.objectExpression([])
             );
 
-          }
-
-          expression = t.logicalExpression(
-            "||",
-            t.callExpression(t.identifier("sap.ui.jsview"), [
+            break;
+          default:
+            expression = t.callExpression(t.identifier(superClassName + ".extend"), [
               t.stringLiteral(fullClassName),
               t.objectExpression(props)
-            ]),
-            t.objectExpression([])
-          );
-          break;
-        case "Fragment":
-          expression = t.logicalExpression(
-            "||",
-            t.callExpression(t.identifier("sap.ui.jsfragment"), [
-              t.stringLiteral(fullClassName),
-              t.objectExpression(props)
-            ]),
-            t.objectExpression([])
-          );
-
-          break;
-        default:
-          expression = t.callExpression(t.identifier(superClassName + ".extend"), [
-            t.stringLiteral(fullClassName),
-            t.objectExpression(props)
-          ]);
-          break;
+            ]);
+            break;
         }
 
 

@@ -251,8 +251,10 @@ exports.default = (babel) => {
             switch (p.value.type) {
               case "JSXExpressionContainer":
                 pre.push(t.objectProperty(id, p.value.expression))
+                break;
               default:
                 pre.push(t.objectProperty(id, p.value))
+                break;
             }
 
           }

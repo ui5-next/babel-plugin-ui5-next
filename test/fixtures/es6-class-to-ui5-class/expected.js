@@ -3,7 +3,7 @@ sap.ui.define("babel/test/test/fixtures/es6-class-to-ui5-class/actual", ["sap/ui
 
   var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-  sap.ui.jsview("babel.test.test.fixtures.es6-class-to-ui5-class.actual", {
+  var AView = sap.ui.jsview("babel.test.test.fixtures.es6-class-to-ui5-class.actual", {
     init: function init() {
       JSView.prototype.init.apply(this, []);
     },

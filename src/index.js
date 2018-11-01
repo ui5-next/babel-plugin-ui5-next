@@ -557,12 +557,7 @@ exports.default = (babel) => {
             break;
         }
 
-
-        if (path.parent && path.parent.type == "ExportNamedDeclaration") {
-          path.replaceWith(t.variableDeclaration("var", [t.variableDeclarator(t.identifier(className), expression)]));
-        } else {
-          path.replaceWith(expression);
-        }
+        path.replaceWith(t.variableDeclaration("var", [t.variableDeclarator(t.identifier(className), expression)]));
 
       }
     },

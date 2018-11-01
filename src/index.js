@@ -35,6 +35,49 @@ exports.default = (babel) => {
     return replace(str, /\.(controller|view)$/g, "");
   };
 
+  const classInnerCallSuperVisitor = (superClassName) => ({
+
+    /**
+     * convert super call in class
+     */
+    CallExpression: {
+      enter: innerPath => {
+
+        const node = innerPath.node;
+
+        if (node.callee.type === "Super") {
+          if (!superClassName) {
+            this.errorWithNode("The keyword 'super' can only used in a derrived class.");
+          }
+
+          const identifier = t.identifier(superClassName + ".apply");
+          let args = t.arrayExpression(node.arguments);
+          if (node.arguments.length === 1 && node.arguments[0].type === "Identifier" && node.arguments[0].name === "arguments") {
+            args = t.identifier("arguments");
+          }
+          innerPath.replaceWith(
+            t.callExpression(identifier, [
+              t.identifier("this"),
+              args
+            ])
+          );
+        } else if (node.callee.object && node.callee.object.type === "Super") {
+          if (!superClassName) {
+            this.errorWithNode("The keyword 'super' can only used in a derrived class.");
+          }
+          const identifier = t.identifier(superClassName + ".prototype" + "." + node.callee.property.name + ".apply");
+          innerPath.replaceWith(
+            t.callExpression(identifier, [
+              t.identifier("this"),
+              t.arrayExpression(node.arguments)
+            ])
+          );
+        }
+      }
+
+    }
+  })
+
   /**
    * Get the source code root path string
    *
@@ -82,6 +125,11 @@ exports.default = (babel) => {
        */
       enter: (path, state) => {
         var { namespace } = state.opts;
+
+        if (isEmpty(namespace)) {
+          throw new Error("You must set namesapce for babel-blugin-ui5-next !")
+        }
+
         const filePath = Path.resolve(path.hub.file.opts.filename);
 
         const sourceRootPath = getSourceRoot(path);
@@ -421,15 +469,25 @@ exports.default = (babel) => {
      * class A extens B {} > B.extend("A", {})
      */
     ClassDeclaration: {
-      exit: path => {
+      enter: path => {
 
         const state = path.state.ui5;
         const node = path.node;
         const props = [];
+
+        // if not extends with class
+        if (isEmpty(node.superClass)) {
+          return
+        }
+
         /**
          * current class extends super name
          */
         var superClassName = node.superClass.name;
+
+        // super.init() => SuperClassName.prototype.init.apply(this,[]) ...
+        path.traverse(classInnerCallSuperVisitor(superClassName))
+
         var fullClassName = "";
         var className = node.id.name;
         var expression = {};
@@ -509,52 +567,6 @@ exports.default = (babel) => {
       }
     },
 
-    /**
-     * convert super call in class
-     */
-    CallExpression: {
-      enter: innerPath => {
-
-        const node = innerPath.node;
-
-        innerPath.findParent((p) => {
-          if (p.isClassDeclaration()) {
-            const superClassName = p.node.superClass.name;
-
-            if (node.callee.type === "Super") {
-              if (!superClassName) {
-                this.errorWithNode("The keyword 'super' can only used in a derrived class.");
-              }
-
-              const identifier = t.identifier(superClassName + ".apply");
-              let args = t.arrayExpression(node.arguments);
-              if (node.arguments.length === 1 && node.arguments[0].type === "Identifier" && node.arguments[0].name === "arguments") {
-                args = t.identifier("arguments");
-              }
-              innerPath.replaceWith(
-                t.callExpression(identifier, [
-                  t.identifier("this"),
-                  args
-                ])
-              );
-            } else if (node.callee.object && node.callee.object.type === "Super") {
-              if (!superClassName) {
-                this.errorWithNode("The keyword 'super' can only used in a derrived class.");
-              }
-              const identifier = t.identifier(superClassName + ".prototype" + "." + node.callee.property.name + ".apply");
-              innerPath.replaceWith(
-                t.callExpression(identifier, [
-                  t.identifier("this"),
-                  t.arrayExpression(node.arguments)
-                ])
-              );
-            }
-          }
-        });
-
-      }
-
-    }
   };
 
 

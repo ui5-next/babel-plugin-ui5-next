@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.3.7"></a>
+## [1.3.7](https://github.com/Soontao/babel-plugin-ui5-next/compare/v1.3.5...v1.3.7) (2018-11-01)
+
+
+### Bug Fixes
+
+* **tmp:** disable es6 native class property transform ([9c6af13](https://github.com/Soontao/babel-plugin-ui5-next/commit/9c6af13))
+
+
+
 <a name="1.3.5"></a>
 ## [1.3.5](https://github.com/Soontao/babel-plugin-ui5-next/compare/v1.3.4...v1.3.5) (2018-11-01)
 

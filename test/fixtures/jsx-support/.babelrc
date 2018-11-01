@@ -23,7 +23,6 @@
     "babel-plugin-transform-async-to-generator",
     "babel-plugin-transform-object-assign",
     "babel-plugin-transform-object-rest-spread",
-    "babel-plugin-transform-class-properties",
     [
       "../../../src/index",
       {

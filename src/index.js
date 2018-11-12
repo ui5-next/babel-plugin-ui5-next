@@ -1,8 +1,22 @@
 const Path = require("path");
-const { concat, split, slice, join, filter, find, flatten, map, isEmpty, trim, forEach, replace, reduce } = require("lodash");
+const {
+  concat,
+  split,
+  slice,
+  join,
+  filter,
+  find,
+  flatten,
+  map,
+  isEmpty,
+  trim,
+  forEach,
+  replace,
+  reduce
+} = require("lodash");
 const { readFileSync } = require("fs");
 
-exports.default = (babel) => {
+exports.default = babel => {
   const { types: t } = babel;
   /**
    * Get extension name from path
@@ -11,7 +25,7 @@ exports.default = (babel) => {
    *
    * @param {string} path
    */
-  const extensionName = (path) => {
+  const extensionName = path => {
     var r = join(slice(split(path, "."), 1), ".");
     if (r) {
       return `.${r}`;
@@ -19,11 +33,14 @@ exports.default = (babel) => {
     return r;
   };
 
-  const getFilePathWithCurrentFileAndRelativePath = (currentFileAbsPath = "", targetRelativePath = "") => {
+  const getFilePathWithCurrentFileAndRelativePath = (
+    currentFileAbsPath = "",
+    targetRelativePath = ""
+  ) => {
     return Path.join(Path.dirname(currentFileAbsPath), targetRelativePath);
   };
 
-  const getSourceCodeByPath = (path) => {
+  const getSourceCodeByPath = path => {
     return readFileSync(path, { encoding: "utf8" });
   };
 
@@ -35,37 +52,46 @@ exports.default = (babel) => {
     return replace(str, /\.(controller|view)$/g, "");
   };
 
-  const classInnerCallSuperVisitor = (superClassName) => ({
-
+  const classInnerCallSuperVisitor = superClassName => ({
     /**
      * convert super call in class
      */
     CallExpression: {
       enter: innerPath => {
-
         const node = innerPath.node;
 
         if (node.callee.type === "Super") {
           if (!superClassName) {
-            this.errorWithNode("The keyword 'super' can only used in a derrived class.");
+            this.errorWithNode(
+              "The keyword 'super' can only used in a derrived class."
+            );
           }
 
           const identifier = t.identifier(superClassName + ".apply");
           let args = t.arrayExpression(node.arguments);
-          if (node.arguments.length === 1 && node.arguments[0].type === "Identifier" && node.arguments[0].name === "arguments") {
+          if (
+            node.arguments.length === 1 &&
+            node.arguments[0].type === "Identifier" &&
+            node.arguments[0].name === "arguments"
+          ) {
             args = t.identifier("arguments");
           }
           innerPath.replaceWith(
-            t.callExpression(identifier, [
-              t.identifier("this"),
-              args
-            ])
+            t.callExpression(identifier, [t.identifier("this"), args])
           );
         } else if (node.callee.object && node.callee.object.type === "Super") {
           if (!superClassName) {
-            this.errorWithNode("The keyword 'super' can only used in a derrived class.");
+            this.errorWithNode(
+              "The keyword 'super' can only used in a derrived class."
+            );
           }
-          const identifier = t.identifier(superClassName + ".prototype" + "." + node.callee.property.name + ".apply");
+          const identifier = t.identifier(
+            superClassName +
+              ".prototype" +
+              "." +
+              node.callee.property.name +
+              ".apply"
+          );
           innerPath.replaceWith(
             t.callExpression(identifier, [
               t.identifier("this"),
@@ -74,16 +100,15 @@ exports.default = (babel) => {
           );
         }
       }
-
     }
-  })
+  });
 
   /**
    * Get the source code root path string
    *
    * @param {Object} path babel path object
    */
-  const getSourceRoot = (path) => {
+  const getSourceRoot = path => {
     let sourceRootPath = null;
     if (path.hub.file.opts.sourceRoot) {
       sourceRootPath = Path.resolve(path.hub.file.opts.sourceRoot);
@@ -92,7 +117,6 @@ exports.default = (babel) => {
     }
     return sourceRootPath;
   };
-
 
   /**
    * Get expression with style attached
@@ -115,11 +139,8 @@ exports.default = (babel) => {
     }
   };
 
-
   const visitor = {
-
     Program: {
-
       /**
        * init with path related informations
        */
@@ -127,7 +148,7 @@ exports.default = (babel) => {
         var { namespace } = state.opts;
 
         if (isEmpty(namespace)) {
-          throw new Error("You must set namesapce for babel-blugin-ui5-next !")
+          throw new Error("You must set namesapce for babel-blugin-ui5-next !");
         }
 
         const filePath = Path.resolve(path.hub.file.opts.filename);
@@ -142,14 +163,23 @@ exports.default = (babel) => {
         // format path
         if (filePath.startsWith(sourceRootPath)) {
           relativeFilePath = Path.relative(sourceRootPath, filePath);
-          relativeFilePathWithoutExtension = Path.dirname(relativeFilePath) + Path.sep + Path.basename(relativeFilePath, extensionName(relativeFilePath));
-          relativeFilePathWithoutExtension = relativeFilePathWithoutExtension.replace(/\\/g, "/");
+          relativeFilePathWithoutExtension =
+            Path.dirname(relativeFilePath) +
+            Path.sep +
+            Path.basename(relativeFilePath, extensionName(relativeFilePath));
+          relativeFilePathWithoutExtension = relativeFilePathWithoutExtension.replace(
+            /\\/g,
+            "/"
+          );
         }
 
         if (!path.state) {
           path.state = {};
         }
-        let modulepath = Path.join(namepath, relativeFilePathWithoutExtension).replace(/\\/g, "/");
+        let modulepath = Path.join(
+          namepath,
+          relativeFilePathWithoutExtension
+        ).replace(/\\/g, "/");
         let moduleFullName = modulepath.replace(/\//g, ".");
 
         path.state.ui5 = {
@@ -169,28 +199,42 @@ exports.default = (babel) => {
         if (path.hub.file.code.startsWith("sap.ui.define")) {
           return;
         }
-        const { imports, namepath, relativeFilePathWithoutExtension } = path.state.ui5;
-        const fileAbsPath = t.stringLiteral(Path.join(namepath, relativeFilePathWithoutExtension).replace(/\\/g, "/"));
+        const {
+          imports,
+          namepath,
+          relativeFilePathWithoutExtension
+        } = path.state.ui5;
+        const fileAbsPath = t.stringLiteral(
+          Path.join(namepath, relativeFilePathWithoutExtension).replace(
+            /\\/g,
+            "/"
+          )
+        );
 
         // remove JSView import in import statment
-        const importsIdentifier = filter(imports, { isView: false }).map(i => t.identifier(i.name));
-        const importsSources = filter(imports, { isView: false }).map(i => t.stringLiteral(i.src));
+        const importsIdentifier = filter(imports, { isView: false }).map(i =>
+          t.identifier(i.name)
+        );
+        const importsSources = filter(imports, { isView: false }).map(i =>
+          t.stringLiteral(i.src)
+        );
         const _default = t.identifier("_default");
 
         const importExtractVars = flatten(
           map(
-            filter(filter(imports, { isView: false }), i => i.specifiers.length > 0),
-            i => i.specifiers.map(
-              s => t.variableDeclaration(
-                "var",
-                [
+            filter(
+              filter(imports, { isView: false }),
+              i => i.specifiers.length > 0
+            ),
+            i =>
+              i.specifiers.map(s =>
+                t.variableDeclaration("var", [
                   t.variableDeclarator(
                     s.local,
                     t.memberExpression(t.identifier(i.name), s.imported)
                   )
-                ]
+                ])
               )
-            )
           )
         );
 
@@ -207,29 +251,24 @@ exports.default = (babel) => {
             // );
             return;
           }
-
         } else {
-          body = map(body, c => c.type == "CallExpression" ? t.expressionStatement(c) : c);
+          body = map(body, c =>
+            c.type == "CallExpression" ? t.expressionStatement(c) : c
+          );
         }
-
-
 
         const defineCallArgs = [
           fileAbsPath,
           t.arrayExpression(importsSources),
           t.functionExpression(
-            null, importsIdentifier, t.blockStatement(
+            null,
+            importsIdentifier,
+            t.blockStatement(
               concat(
                 importExtractVars,
-                t.variableDeclaration(
-                  "var",
-                  [
-                    t.variableDeclarator(
-                      _default,
-                      t.objectExpression([])
-                    )
-                  ]
-                ),
+                t.variableDeclaration("var", [
+                  t.variableDeclarator(_default, t.objectExpression([]))
+                ]),
                 body, // original body
                 t.returnStatement(_default)
               )
@@ -237,12 +276,13 @@ exports.default = (babel) => {
           )
         ];
 
-        const defineCall = t.callExpression(t.identifier("sap.ui.define"), defineCallArgs);
+        const defineCall = t.callExpression(
+          t.identifier("sap.ui.define"),
+          defineCallArgs
+        );
 
         path.node.body = [defineCall];
-
       }
-
     },
 
     /**
@@ -253,7 +293,9 @@ exports.default = (babel) => {
         const jsxElement = path.find(p => p.type == "JSXElement");
         const value = path.node.value;
         if (!trim(value) == "\n") {
-          jsxElement.node.openingElement.attributes.push(t.jSXAttribute(t.jSXIdentifier("text"), t.stringLiteral(value)));
+          jsxElement.node.openingElement.attributes.push(
+            t.jSXAttribute(t.jSXIdentifier("text"), t.stringLiteral(value))
+          );
         }
         path.remove();
       }
@@ -263,11 +305,8 @@ exports.default = (babel) => {
      * parse JSX elements to UI5 construction
      */
     JSXElement: {
-
       exit: path => {
-
         var { imports } = path.state.ui5;
-
 
         // get jsx element type
         var tag = path.node.openingElement.name.name;
@@ -287,65 +326,68 @@ exports.default = (babel) => {
 
         // map attrs to object property
 
-        var props = reduce(path.node.openingElement.attributes, (pre, p) => {
-          if (p.name.name == "class") {
+        var props = reduce(
+          path.node.openingElement.attributes,
+          (pre, p) => {
+            if (p.name.name == "class") {
+              classes = concat(classes, split(p.value.value, " "));
+            } else {
+              var id = t.identifier(p.name.name);
 
-            classes = concat(classes, split(p.value.value, " "));
-
-          } else {
-
-            var id = t.identifier(p.name.name);
-
-            switch (p.value.type) {
-              case "JSXExpressionContainer":
-                pre.push(t.objectProperty(id, p.value.expression))
-                break;
-              default:
-                pre.push(t.objectProperty(id, p.value))
-                break;
+              switch (p.value.type) {
+                case "JSXExpressionContainer":
+                  pre.push(t.objectProperty(id, p.value.expression));
+                  break;
+                default:
+                  pre.push(t.objectProperty(id, p.value));
+                  break;
+              }
             }
-
-          }
-          return pre
-
-        }, []);
+            return pre;
+          },
+          []
+        );
 
         // > inner children
         const children = filter(path.node.children, c => {
-
           switch (c.type) {
-            case "NewExpression": case "CallExpression":
+            case "NewExpression":
+            case "CallExpression":
               return true;
             default:
               return false;
           }
-
         });
-
 
         // with children elements
         if (children && children.length > 0) {
-          props.push(t.objectProperty(t.identifier("content"), t.arrayExpression(children)));
+          props.push(
+            t.objectProperty(
+              t.identifier("content"),
+              t.arrayExpression(children)
+            )
+          );
         }
 
         // if this element is JSView element
         if (viewName) {
-
           props = [
-            t.objectProperty(t.identifier("viewData"), t.objectExpression(props)),
-            t.objectProperty(t.identifier("viewName"), t.stringLiteral(viewName))
+            t.objectProperty(
+              t.identifier("viewData"),
+              t.objectExpression(props)
+            ),
+            t.objectProperty(
+              t.identifier("viewName"),
+              t.stringLiteral(viewName)
+            )
           ];
-
         }
 
         // < inner children
 
-        var expression = t.newExpression(
-          t.identifier(tag),
-          [
-            t.objectExpression(props)
-          ]
-        );
+        var expression = t.newExpression(t.identifier(tag), [
+          t.objectExpression(props)
+        ]);
 
         // with class define
         if (!isEmpty(classes)) {
@@ -353,7 +395,6 @@ exports.default = (babel) => {
         }
 
         path.replaceWith(expression);
-
       }
     },
 
@@ -381,9 +422,16 @@ exports.default = (babel) => {
         var src = node.source.value; // related path in import statment
 
         // is related source or third party lib
-        if (src.startsWith("./") || src.startsWith("../") || !src.startsWith("sap")) {
+        if (
+          src.startsWith("./") ||
+          src.startsWith("../") ||
+          !src.startsWith("sap")
+        ) {
           try {
-            var sourcePath = getFilePathWithCurrentFileAndRelativePath(currentFileAbsPath, src);
+            var sourcePath = getFilePathWithCurrentFileAndRelativePath(
+              currentFileAbsPath,
+              src
+            );
             var importedSource = getSourceCodeByPath(`${sourcePath}.js`);
 
             if (isJSViewDefination(importedSource)) {
@@ -399,8 +447,11 @@ exports.default = (babel) => {
               }
             }
 
-            src = Path.join(namepath, Path.dirname(relativeFilePathWithoutExtension), src).replace(/\\/g, "/");
-
+            src = Path.join(
+              namepath,
+              Path.dirname(relativeFilePathWithoutExtension),
+              src
+            ).replace(/\\/g, "/");
           } catch (e) {
             // pass
           }
@@ -410,8 +461,12 @@ exports.default = (babel) => {
 
         name = src.split("/").pop();
 
-        var _defaultSpecifier = find(node.specifiers, { "type": "ImportDefaultSpecifier" });
-        var _normalSpecifiers = filter(node.specifiers, { "type": "ImportSpecifier" });
+        var _defaultSpecifier = find(node.specifiers, {
+          type: "ImportDefaultSpecifier"
+        });
+        var _normalSpecifiers = filter(node.specifiers, {
+          type: "ImportSpecifier"
+        });
 
         if (_defaultSpecifier) {
           name = _defaultSpecifier.local.name;
@@ -439,20 +494,26 @@ exports.default = (babel) => {
               _default,
               t.callExpression(
                 t.memberExpression(
-                  t.identifier("Object"), t.identifier("assign")),
+                  t.identifier("Object"),
+                  t.identifier("assign")
+                ),
                 [path.node.declaration, _default]
               )
             );
             break;
           case "ExportNamedDeclaration":
-            assign = t.assignmentExpression(
-              "=",
-              t.memberExpression(
-                _default,
-                path.node.declaration.declarations[0].id
-              ),
-              path.node.declaration.declarations[0].init
-            );
+            var exportId = path.node.declaration.declarations[0].id;
+            var exportBody = path.node.declaration.declarations[0].init;
+            assign = t.variableDeclaration("var", [
+              t.variableDeclarator(
+                exportId,
+                t.assignmentExpression(
+                  "=",
+                  t.memberExpression(_default, exportId),
+                  exportBody
+                )
+              )
+            ]);
             break;
           default:
             break;
@@ -470,14 +531,13 @@ exports.default = (babel) => {
      */
     ClassDeclaration: {
       enter: path => {
-
         const state = path.state.ui5;
         const node = path.node;
         const props = [];
 
         // if not extends with class
         if (isEmpty(node.superClass)) {
-          return
+          return;
         }
 
         /**
@@ -486,7 +546,7 @@ exports.default = (babel) => {
         var superClassName = node.superClass.name;
 
         // super.init() => SuperClassName.prototype.init.apply(this,[]) ...
-        path.traverse(classInnerCallSuperVisitor(superClassName))
+        path.traverse(classInnerCallSuperVisitor(superClassName));
 
         var fullClassName = "";
         var className = node.id.name;
@@ -522,11 +582,14 @@ exports.default = (babel) => {
                   t.functionExpression(
                     null,
                     [],
-                    t.blockStatement([t.returnStatement(t.stringLiteral("sap.ui.core.mvc.Controller"))])
+                    t.blockStatement([
+                      t.returnStatement(
+                        t.stringLiteral("sap.ui.core.mvc.Controller")
+                      )
+                    ])
                   )
                 )
               );
-
             }
 
             expression = t.logicalExpression(
@@ -550,20 +613,21 @@ exports.default = (babel) => {
 
             break;
           default:
-            expression = t.callExpression(t.identifier(superClassName + ".extend"), [
-              t.stringLiteral(fullClassName),
-              t.objectExpression(props)
-            ]);
+            expression = t.callExpression(
+              t.identifier(superClassName + ".extend"),
+              [t.stringLiteral(fullClassName), t.objectExpression(props)]
+            );
             break;
         }
 
-        path.replaceWith(t.variableDeclaration("var", [t.variableDeclarator(t.identifier(className), expression)]));
-
+        path.replaceWith(
+          t.variableDeclaration("var", [
+            t.variableDeclarator(t.identifier(className), expression)
+          ])
+        );
       }
-    },
-
+    }
   };
-
 
   return {
     visitor: visitor

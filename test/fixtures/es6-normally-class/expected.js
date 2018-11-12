@@ -7,7 +7,7 @@ sap.ui.define("babel/test/test/fixtures/es6-normally-class/actual", [], function
 
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-  _default.C = function C() {
+  var C = _default.C = function C() {
     _classCallCheck(this, C);
   };
 

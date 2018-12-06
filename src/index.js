@@ -52,6 +52,18 @@ exports.default = babel => {
     return replace(str, /\.(controller|view)$/g, "");
   };
 
+  const mapDecoratorsToExpression = (decorators, inner) => {
+    if (isEmpty(decorators)) {
+      return inner;
+    } else {
+      var wrapper = inner;
+      decorators.forEach(decorator => {
+        wrapper = t.callExpression(decorator.expression, [wrapper]);
+      });
+      return wrapper;
+    }
+  };
+
   const classInnerCallSuperVisitor = superClassName => ({
     /**
      * convert super call in class
@@ -59,7 +71,6 @@ exports.default = babel => {
     CallExpression: {
       enter: innerPath => {
         const node = innerPath.node;
-
         if (node.callee.type === "Super") {
           if (!superClassName) {
             this.errorWithNode(
@@ -559,6 +570,8 @@ exports.default = babel => {
           fullClassName = node.id.name;
         }
 
+        var decorators = node.decorators;
+
         forEach(node.body.body, member => {
           if (member.type === "ClassMethod") {
             const func = t.functionExpression(null, member.params, member.body);
@@ -575,6 +588,7 @@ exports.default = babel => {
 
         switch (superClassName) {
           case "JSView":
+            // set a default getControllerName
             if (!haveDefinedGetControllerName) {
               props.push(
                 t.objectProperty(
@@ -592,39 +606,78 @@ exports.default = babel => {
               );
             }
 
-            expression = t.logicalExpression(
-              "||",
-              t.callExpression(t.identifier("sap.ui.jsview"), [
-                t.stringLiteral(fullClassName),
-                t.objectExpression(props)
-              ]),
-              t.objectExpression([])
-            );
-            break;
-          case "Fragment":
-            expression = t.logicalExpression(
-              "||",
-              t.callExpression(t.identifier("sap.ui.jsfragment"), [
-                t.stringLiteral(fullClassName),
-                t.objectExpression(props)
-              ]),
-              t.objectExpression([])
+            path.replaceWith(
+              t.variableDeclaration("var", [
+                t.variableDeclarator(
+                  t.identifier(className),
+                  mapDecoratorsToExpression(
+                    decorators,
+                    t.objectExpression(props)
+                  )
+                )
+              ])
             );
 
+            path.insertAfter(
+              t.expressionStatement(
+                t.assignmentExpression(
+                  "=",
+                  t.identifier(className),
+                  t.logicalExpression(
+                    "||",
+                    t.callExpression(t.identifier("sap.ui.jsview"), [
+                      t.stringLiteral(fullClassName),
+                      t.identifier(className)
+                    ]),
+                    t.identifier(className)
+                  )
+                )
+              )
+            );
+
+            break;
+          case "Fragment":
+            path.replaceWith(
+              t.variableDeclaration("var", [
+                t.variableDeclarator(
+                  t.identifier(className),
+                  mapDecoratorsToExpression(
+                    decorators,
+                    t.objectExpression(props)
+                  )
+                )
+              ])
+            );
+
+            path.insertAfter(
+              t.expressionStatement(
+                t.assignmentExpression(
+                  "=",
+                  t.identifier(className),
+                  t.logicalExpression(
+                    "||",
+                    t.callExpression(t.identifier("sap.ui.jsfragment"), [
+                      t.stringLiteral(fullClassName),
+                      t.identifier(className)
+                    ]),
+                    t.identifier(className)
+                  )
+                )
+              )
+            );
             break;
           default:
             expression = t.callExpression(
               t.identifier(superClassName + ".extend"),
               [t.stringLiteral(fullClassName), t.objectExpression(props)]
             );
+            path.replaceWith(
+              t.variableDeclaration("var", [
+                t.variableDeclarator(t.identifier(className), expression)
+              ])
+            );
             break;
         }
-
-        path.replaceWith(
-          t.variableDeclaration("var", [
-            t.variableDeclarator(t.identifier(className), expression)
-          ])
-        );
       }
     }
   };

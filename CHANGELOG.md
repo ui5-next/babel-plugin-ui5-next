@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/Soontao/babel-plugin-ui5-next/compare/v1.3.8...v1.4.0) (2018-12-06)
+
+
+### Features
+
+* **syntax:** decorator support ([aaff1ca](https://github.com/Soontao/babel-plugin-ui5-next/commit/aaff1ca))
+
+
+
 <a name="1.3.8"></a>
 ## [1.3.8](https://github.com/Soontao/babel-plugin-ui5-next/compare/v1.3.7...v1.3.8) (2018-11-12)
 

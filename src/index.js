@@ -98,10 +98,10 @@ exports.default = babel => {
           }
           const identifier = t.identifier(
             superClassName +
-              ".prototype" +
-              "." +
-              node.callee.property.name +
-              ".apply"
+            ".prototype" +
+            "." +
+            node.callee.property.name +
+            ".apply"
           );
           innerPath.replaceWith(
             t.callExpression(identifier, [
@@ -513,18 +513,39 @@ exports.default = babel => {
             );
             break;
           case "ExportNamedDeclaration":
-            var exportId = path.node.declaration.declarations[0].id;
-            var exportBody = path.node.declaration.declarations[0].init;
-            assign = t.variableDeclaration("var", [
-              t.variableDeclarator(
-                exportId,
-                t.assignmentExpression(
-                  "=",
-                  t.memberExpression(_default, exportId),
-                  exportBody
+            if (path.node.declaration) {
+              var exportId = path.node.declaration.declarations[0].id;
+              var exportBody = path.node.declaration.declarations[0].init;
+              assign = t.variableDeclaration("var", [
+                t.variableDeclarator(
+                  exportId,
+                  t.assignmentExpression(
+                    "=",
+                    t.memberExpression(_default, exportId),
+                    exportBody
+                  )
                 )
-              )
-            ]);
+              ]);
+            }
+            if (!isEmpty(path.node.specifiers)) {
+              assign = t.assignmentExpression(
+                "=",
+                _default,
+                t.callExpression(
+                  t.memberExpression(
+                    t.identifier("Object"),
+                    t.identifier("assign")
+                  ),
+                  [
+                    t.objectExpression(
+                      map(path.node.specifiers, spec => t.objectProperty(spec.exported, spec.local))
+                    ),
+                    _default
+                  ]
+                )
+              );
+            }
+
             break;
           default:
             break;

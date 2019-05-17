@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node:7.10
+      - image: circleci/node:8
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -35,3 +35,34 @@ jobs:
         
       # run tests!
       - run: yarn test
+      
+  deploy:
+      working_directory: ~/repo
+      docker:
+        - image: circleci/node:8.9.1
+      steps:
+        - checkout
+        - run: npm install
+        - run:
+            name: Authenticate with registry
+            command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+        - run:
+            name: Publish package
+            command: npm publish
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - deploy:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+      - build:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/

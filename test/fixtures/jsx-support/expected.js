@@ -1,4 +1,4 @@
-sap.ui.define("babel/test/test/fixtures/jsx-support/actual", ["sap/ui/JSView", "sap/m/Button"], function (JSView, Button) {
+sap.ui.define("babel/test/test/fixtures/jsx-support/actual", ["sap/ui/JSView", "sap/m/Button", "sap/m/HTML"], function (JSView, Button, HTML) {
   var _default = {};
 
   var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -6,6 +6,14 @@ sap.ui.define("babel/test/test/fixtures/jsx-support/actual", ["sap/ui/JSView", "
   var AView = {
     onPress: function onPress() {
       // do nothing
+    },
+    createPart: function createPart() {
+      this._hideButton = new Button({
+        name: "1"
+      });
+      return new HTML({
+        content: [this._hideButton]
+      });
     },
     createContent: function createContent() {
       return new Button({

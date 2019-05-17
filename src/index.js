@@ -360,15 +360,21 @@ exports.default = babel => {
         );
 
         // > inner children
-        const children = filter(path.node.children, c => {
+        const children = []
+
+        path.node.children && path.node.children.forEach(c => {
           switch (c.type) {
             case "NewExpression":
             case "CallExpression":
-              return true;
-            default:
-              return false;
+              children.push(c)
+              break
+            case "JSXExpressionContainer":
+              children.push(c.expression)
+              break
           }
-        });
+        })
+
+
 
         // with children elements
         if (children && children.length > 0) {

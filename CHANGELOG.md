@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.4.3"></a>
+## [1.4.3](https://github.com/Soontao/babel-plugin-ui5-next/compare/v1.4.2...v1.4.3) (2019-05-18)
+
+
+### Bug Fixes
+
+* **class:** extends from non-UI5 class ([ea80f84](https://github.com/Soontao/babel-plugin-ui5-next/commit/ea80f84))
+
+
+
 <a name="1.4.2"></a>
 ## [1.4.2](https://github.com/Soontao/babel-plugin-ui5-next/compare/v1.4.1...v1.4.2) (2019-05-17)
 

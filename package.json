@@ -47,11 +47,10 @@
     "lodash": "^4.17.11"
   },
   "scripts": {
-    "clean": "rm -rf lib",
     "build": "babel src -d lib",
     "test": "mocha --require babel-core/register",
     "test:watch": "npm run test -- --watch",
-    "prepare": "npm run clean && npm run build",
+    "prepare": "npm run build",
     "release": "standard-version --commit-all --no-verify && git push --follow-tags origin master",
     "commitmsg": "commitlint -E HUSKY_GIT_PARAMS",
     "precommit": "npm run build"

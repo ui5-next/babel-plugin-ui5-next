@@ -1,22 +1,9 @@
 const Path = require("path");
-const {
-  concat,
-  split,
-  slice,
-  join,
-  filter,
-  find,
-  flatten,
-  map,
-  isEmpty,
-  trim,
-  forEach,
-  replace,
-  reduce
-} = require("lodash");
+const { concat, split, slice, join, filter, find, flatten, map, isEmpty, trim, forEach, replace, reduce } = require("lodash");
 const { readFileSync } = require("fs");
 
 exports.default = babel => {
+
   const { types: t } = babel;
   /**
    * Get extension name from path
@@ -63,6 +50,29 @@ exports.default = babel => {
       return wrapper;
     }
   };
+
+  /**
+   * check class is UI5 Class from imports list
+   * 
+   * @param {string} className 
+   * @param {Array} imports 
+   */
+  const isUI5Class = (className = "", imports = []) => {
+    var rt = false
+
+    if (isEmpty(className)) {
+      return rt
+    }
+
+    imports.forEach(i => {
+      if (i.name == className && i.src.startsWith("sap")) {
+        rt = true
+      }
+    })
+
+    return rt
+
+  }
 
   const classInnerCallSuperVisitor = superClassName => ({
     /**
@@ -575,6 +585,11 @@ exports.default = babel => {
 
         // if not extends with class
         if (isEmpty(node.superClass)) {
+          return;
+        }
+
+        // if not extends from UI5 class
+        if (!isUI5Class(node.superClass.name, state.imports)) {
           return;
         }
 

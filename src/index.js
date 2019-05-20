@@ -31,7 +31,7 @@ exports.default = babel => {
     return readFileSync(path, { encoding: "utf8" });
   };
 
-  const isJSViewDefination = (str = "") => {
+  const isJSViewDefinition = (str = "") => {
     return /class.*?extends.*?JSView/.test(str);
   };
 
@@ -217,7 +217,8 @@ exports.default = babel => {
        * convert amd to ui5 module system
        */
       exit: path => {
-        if (path.hub.file.code.startsWith("sap.ui.define")) {
+        // if start with 'sap', means use native UI5 module, just skip
+        if (path.hub.file.code.trim().startsWith("sap")) {
           return;
         }
         const {
@@ -259,24 +260,7 @@ exports.default = babel => {
           )
         );
 
-        var body = path.node.body;
-
-        // fix native ui5 module define
-        if (body.length == 1 && body[0].type == "ExpressionStatement") {
-          var callExpression = body[0].expression;
-          if (callExpression.type == "CallExpression") {
-            // body[0].expression = t.assignmentExpression(
-            //   "=",
-            //   _default,
-            //   body[0].expression
-            // );
-            return;
-          }
-        } else {
-          body = map(body, c =>
-            c.type == "CallExpression" ? t.expressionStatement(c) : c
-          );
-        }
+        var body = path.node.body.map(c => c.type == "CallExpression" ? t.expressionStatement(c) : c);
 
         const defineCallArgs = [
           fileAbsPath,
@@ -461,7 +445,7 @@ exports.default = babel => {
             );
             var importedSource = getSourceCodeByPath(`${sourcePath}.js`);
 
-            if (isJSViewDefination(importedSource)) {
+            if (isJSViewDefinition(importedSource)) {
               isViewImport = true;
               // if not import sap.ui.core.mvc.JSView before
               if (isEmpty(find(state.imports, { name: "JSView" }))) {
@@ -573,9 +557,9 @@ exports.default = babel => {
     },
 
     /**
-     * convert ES6 class defination to UI5 class defination
+     * convert ES6 class definition to UI5 class defination
      *
-     * class A extens B {} > B.extend("A", {})
+     * class A extend B {} > B.extend("A", {})
      */
     ClassDeclaration: {
       enter: path => {

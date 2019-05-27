@@ -5,6 +5,7 @@
     "editor.wordWrap": "on",
     "eslint.autoFixOnSave": true,
     "cSpell.words": [
+        "jsfragment",
         "modulepath",
         "namepath"
     ]

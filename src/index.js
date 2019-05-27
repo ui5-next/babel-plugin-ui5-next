@@ -594,16 +594,26 @@ exports.default = babel => {
         var decorators = node.decorators;
 
         forEach(node.body.body, member => {
+
           if (member.type === "ClassMethod") {
+
             const func = t.functionExpression(null, member.params, member.body);
+
             func.generator = member.generator;
             func.async = member.async;
+
             props.push(t.objectProperty(member.key, func));
+
             if (member.key.name == "getControllerName") {
               haveDefinedGetControllerName = true;
             }
+
           } else if (member.type == "ClassProperty") {
-            props.push(t.objectProperty(member.key, member.value));
+            if (member.key && member.value) {
+              props.push(t.objectProperty(member.key, member.value));
+            } else {
+              console.warn(`Not support class member ${member.key} in ${className}`)
+            }
           }
         });
 

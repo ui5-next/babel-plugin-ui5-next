@@ -221,11 +221,8 @@ exports.default = babel => {
         if (path.hub.file.code.trim().startsWith("sap")) {
           return;
         }
-        const {
-          imports,
-          namepath,
-          relativeFilePathWithoutExtension
-        } = path.state.ui5;
+        const { imports, namepath, relativeFilePathWithoutExtension } = path.state.ui5;
+
         const fileAbsPath = t.stringLiteral(
           Path.join(namepath, relativeFilePathWithoutExtension).replace(
             /\\/g,
@@ -233,13 +230,13 @@ exports.default = babel => {
           )
         );
 
-        // remove JSView import in import statment
-        const importsIdentifier = filter(imports, { isView: false }).map(i =>
-          t.identifier(i.name)
-        );
-        const importsSources = filter(imports, { isView: false }).map(i =>
-          t.stringLiteral(i.src)
-        );
+        // remove JSView import in import statement
+        // sap.ui.define([], {a,b,c,d}) ... 
+        const importsIdentifier = filter(imports, { isView: false }).map(i => t.identifier(i.name));
+
+        // sap.ui.define({["sap/ui...", ...]}...) ... 
+        const importsSources = filter(imports, { isView: false }).map(i => t.stringLiteral(i.src));
+
         const _default = t.identifier("_default");
 
         const importExtractVars = flatten(
@@ -430,14 +427,14 @@ exports.default = babel => {
 
         var isViewImport = false;
 
-        var src = node.source.value; // related path in import statment
+        var src = node.source.value; // related path in import statement
+
+        var isRelativeModule = src.startsWith("./") || src.startsWith("../");
+
+        var isNonUi5Module = !src.startsWith("sap")
 
         // is related source or third party lib
-        if (
-          src.startsWith("./") ||
-          src.startsWith("../") ||
-          !src.startsWith("sap")
-        ) {
+        if (isRelativeModule || isNonUi5Module) {
           try {
             var sourcePath = getFilePathWithCurrentFileAndRelativePath(
               currentFileAbsPath,
@@ -458,11 +455,7 @@ exports.default = babel => {
               }
             }
 
-            src = Path.join(
-              namepath,
-              Path.dirname(relativeFilePathWithoutExtension),
-              src
-            ).replace(/\\/g, "/");
+            src = Path.join(namepath, Path.dirname(relativeFilePathWithoutExtension), src).replace(/\\/g, "/");
           } catch (e) {
             // pass
           }
@@ -470,11 +463,13 @@ exports.default = babel => {
 
         src = src.replace(/\\/g, "/");
 
-        name = src.split("/").pop();
+        // default name same with last part of library
+        name = src.split("/").pop().replace(/\W/g, '');;
 
         var _defaultSpecifier = find(node.specifiers, {
           type: "ImportDefaultSpecifier"
         });
+
         var _normalSpecifiers = filter(node.specifiers, {
           type: "ImportSpecifier"
         });

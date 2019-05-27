@@ -3,5 +3,9 @@
     "editor.tabSize": 2,
     "editor.formatOnSave": true,
     "editor.wordWrap": "on",
-    "eslint.autoFixOnSave": true
+    "eslint.autoFixOnSave": true,
+    "cSpell.words": [
+        "modulepath",
+        "namepath"
+    ]
 }

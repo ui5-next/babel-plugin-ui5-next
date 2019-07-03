@@ -32,6 +32,12 @@ exports.default = babel => {
     return /class.*?extends.*?JSView/.test(str);
   };
 
+  const isUI5Control = (str = "") => {
+    var importedUI5Control = /sap\/ui\/core\/Control/.test(str) || /sap\.ui\.core\.Control/.test(str)
+    var extendControl = /class.*?extends.*?Control/.test(str) || /sap\.ui\.core\.Control\.extend/.test(str)
+    return importedUI5Control && extendControl
+  }
+
   const removeViewOrController = (str = "") => {
     return replace(str, /\.(controller|view)$/g, "");
   };
@@ -69,7 +75,11 @@ exports.default = babel => {
         if (srcPath && i.originalSrc) {
           if (i.originalSrc.startsWith("./") || i.originalSrc.startsWith("../")) {
             try {
-              if (isJSViewDefinition(readSource(pathJoin(srcPath, `${i.originalSrc}.js`)))) {
+              const classSource = readSource(pathJoin(srcPath, `${i.originalSrc}.js`))
+              if (isJSViewDefinition(classSource)) {
+                rt = true
+              }
+              if (isUI5Control(classSource)) {
                 rt = true
               }
             } catch (error) {

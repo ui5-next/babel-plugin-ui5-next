@@ -2,6 +2,7 @@
 import JSView from "sap/ui/JSView"
 import Button from "sap/m/Button"
 import HTML from "sap/m/HTML"
+import MonacoEditor from "./table";
 
 export default class AView extends JSView {
 
@@ -16,6 +17,10 @@ export default class AView extends JSView {
 
   createContent() {
     return <Button class="btnClass1" onPress={this.onPress.bind(this)}>Text Here</Button>
+  }
+
+  createEditor() {
+    return <MonacoEditor></MonacoEditor>
   }
 
 }

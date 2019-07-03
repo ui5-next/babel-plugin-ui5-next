@@ -1,3 +1,5 @@
+"use strict";
+
 sap.ui.define("babel/test/test/fixtures/exports-multi-name/actual", ["./Router"], function (MobileRouter) {
   var _default = {};
 

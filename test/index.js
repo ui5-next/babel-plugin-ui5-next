@@ -3,6 +3,8 @@ import fs from 'fs';
 import assert from 'assert';
 import { transformFileSync } from 'babel-core';
 
+import config from "./babelrc"
+
 function trim(str) {
   return str.replace(/^\s+|\s+$/, '');
 }
@@ -13,7 +15,7 @@ describe('Next-generation syntax for SAP UI5', () => {
     it(`should ${caseName.split('-').join(' ')}`, () => {
       const fixtureDir = path.join(fixturesDir, caseName);
       const actualPath = path.join(fixtureDir, 'actual.js');
-      const actual = transformFileSync(actualPath).code;
+      const actual = transformFileSync(actualPath, config).code;
       const expectedPath = path.join(fixtureDir, 'expected.js');
       if (fs.existsSync(expectedPath)) {
         const expected = fs.readFileSync(expectedPath).toString()

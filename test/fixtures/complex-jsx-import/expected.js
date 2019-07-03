@@ -1,3 +1,5 @@
+"use strict";
+
 sap.ui.define("babel/test/test/fixtures/complex-jsx-import/actual", ["sap/ui/JSView", "sap/m/Button", "sap/m/HTML", "babel/test/test/fixtures/complex-jsx-import/table"], function (JSView, Button, HTML, MonacoEditor) {
   var _default = {};
 

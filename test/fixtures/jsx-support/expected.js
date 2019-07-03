@@ -1,3 +1,5 @@
+"use strict";
+
 sap.ui.define("babel/test/test/fixtures/jsx-support/actual", ["sap/ui/JSView", "sap/m/Button", "sap/m/HTML"], function (JSView, Button, HTML) {
   var _default = {};
 

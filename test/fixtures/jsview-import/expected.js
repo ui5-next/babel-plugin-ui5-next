@@ -1,3 +1,5 @@
+"use strict";
+
 sap.ui.define("babel/test/test/fixtures/jsview-import/actual", ["sap/ui/core/mvc/JSView"], function (JSView) {
   var _default = {};
 

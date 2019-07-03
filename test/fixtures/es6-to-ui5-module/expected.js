@@ -1,3 +1,5 @@
+"use strict";
+
 sap.ui.define("babel/test/test/fixtures/es6-to-ui5-module/actual", ["./test", "sap/ui/Device"], function (test, Deivce) {
   var sample = test.sample;
   var _default = {};

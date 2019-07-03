@@ -1,3 +1,5 @@
+"use strict";
+
 sap.ui.define("babel/test/test/fixtures/es6-class-constructor/actual", ["sap/ui/JSView", "sap/m/Button"], function (JSView, Button) {
   var _default = {};
 

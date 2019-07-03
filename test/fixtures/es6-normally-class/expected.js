@@ -1,3 +1,5 @@
+"use strict";
+
 sap.ui.define("babel/test/test/fixtures/es6-normally-class/actual", ["react"], function (react) {
   var Component = react.Component;
   var _default = {};

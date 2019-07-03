@@ -14,10 +14,11 @@ Next-generation syntax for SAP UI5
 - Convert ES6 module system to UI5 module system
 - Enhance `JSView` logic in import/export
 - `JSX` syntax support, convert XML `class` to JSView code
+- React JSX support
 - Class decorator support
 
 ## Usage
 
-Please `DONT` use this plugin directly, just use [the generator](https://github.com/Soontao/ui5g) to generate UI5 project with predefined config.
+Please `DO NOT` use this plugin directly, just use [the generator](https://github.com/Soontao/ui5g) to generate UI5 project with predefined config.
 
 ## [CHANGELOG](./CHANGELOG.md)

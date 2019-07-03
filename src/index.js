@@ -20,16 +20,13 @@ exports.default = babel => {
     return r;
   };
 
-  const getFilePathWithCurrentFileAndRelativePath = (
-    currentFileAbsPath = "",
-    targetRelativePath = ""
-  ) => {
+  const pathJoin = (currentFileAbsPath = "", targetRelativePath = "") => {
     return Path.join(Path.dirname(currentFileAbsPath), targetRelativePath);
   };
 
-  const getSourceCodeByPath = path => {
-    return readFileSync(path, { encoding: "utf8" });
-  };
+  const readSource = path => {
+    return readFileSync(path, { encoding: "utf8" })
+  }
 
   const isJSViewDefinition = (str = "") => {
     return /class.*?extends.*?JSView/.test(str);
@@ -57,7 +54,7 @@ exports.default = babel => {
    * @param {string} className 
    * @param {Array} imports 
    */
-  const isUI5Class = (className = "", imports = []) => {
+  const isUI5Class = (className = "", imports = [], srcPath) => {
     var rt = false
 
     if (isEmpty(className)) {
@@ -65,8 +62,23 @@ exports.default = babel => {
     }
 
     imports.forEach(i => {
-      if (i.name == className && i.src.startsWith("sap")) {
-        rt = true
+      if (i.name == className) {
+        if (i.src.startsWith("sap")) {
+          rt = true
+        }
+        if (srcPath && i.originalSrc) {
+          if (i.originalSrc.startsWith("./") || i.originalSrc.startsWith("../")) {
+            try {
+              if (isJSViewDefinition(readSource(pathJoin(srcPath, `${i.originalSrc}.js`)))) {
+                rt = true
+              }
+            } catch (error) {
+              console.error(error)
+              // module not found
+            }
+
+          }
+        }
       }
     })
 
@@ -292,14 +304,27 @@ exports.default = babel => {
      */
     JSXText: {
       enter: path => {
+        const srcPath = path.hub.file.opts.filename;
+        const { imports } = path.state.ui5;
+
         const jsxElement = path.find(p => p.type == "JSXElement");
+
+        const tag = jsxElement.node.openingElement.name.name;
+
+        // not process if not UI5 module
+        if (!isUI5Class(tag, imports, srcPath)) {
+          return
+        }
+
         const value = path.node.value;
         if (!trim(value) == "\n") {
           jsxElement.node.openingElement.attributes.push(
             t.jSXAttribute(t.jSXIdentifier("text"), t.stringLiteral(value))
           );
         }
+
         path.remove();
+
       }
     },
 
@@ -308,10 +333,15 @@ exports.default = babel => {
      */
     JSXElement: {
       exit: path => {
+        const srcPath = path.hub.file.opts.filename;
         var { imports } = path.state.ui5;
 
         // get jsx element type
         var tag = path.node.openingElement.name.name;
+
+        if (!isUI5Class(tag, imports, srcPath)) {
+          return
+        }
 
         var viewName = "";
 
@@ -428,6 +458,8 @@ exports.default = babel => {
         var isViewImport = false;
 
         var src = node.source.value; // related path in import statement
+        var mOriginalSrc = node.source.value; // related path in import statement
+
 
         var isRelativeModule = src.startsWith("./") || src.startsWith("../");
 
@@ -436,11 +468,8 @@ exports.default = babel => {
         // is related source or third party lib
         if (isRelativeModule || isNonUi5Module) {
           try {
-            var sourcePath = getFilePathWithCurrentFileAndRelativePath(
-              currentFileAbsPath,
-              src
-            );
-            var importedSource = getSourceCodeByPath(`${sourcePath}.js`);
+            var sourcePath = pathJoin(currentFileAbsPath, src);
+            var importedSource = readSource(`${sourcePath}.js`);
 
             if (isJSViewDefinition(importedSource)) {
               isViewImport = true;
@@ -480,6 +509,7 @@ exports.default = babel => {
 
         state.imports.push({
           src,
+          originalSrc: mOriginalSrc,
           specifiers: _normalSpecifiers || [],
           name,
           isView: isViewImport
@@ -612,7 +642,7 @@ exports.default = babel => {
             if (member.key && member.value) {
               props.push(t.objectProperty(member.key, member.value));
             } else {
-              console.warn(`Not support class member ${member.key} in ${className}`)
+              console.warn(`Not support class member ${member.key} in ${className} `)
             }
           }
         });

@@ -38,6 +38,12 @@ exports.default = babel => {
     return importedUI5Control && extendControl
   }
 
+  const isReactComponent = (str = "") => {
+    var importedReact = /import.*?Component.*?from.*?react/.test(str)
+    var extendComponent = /class.*?extends.*?Component/.test(str)
+    return importedReact && extendComponent
+  }
+
   const removeViewOrController = (str = "") => {
     return replace(str, /\.(controller|view)$/g, "");
   };
@@ -61,34 +67,61 @@ exports.default = babel => {
    * @param {Array} imports 
    */
   const isUI5Class = (className = "", imports = [], srcPath) => {
+
     var rt = false
 
     if (isEmpty(className)) {
       return rt
     }
 
+    // find super class
     imports.forEach(i => {
+
       if (i.name == className) {
+
         if (i.src.startsWith("sap")) {
           rt = true
-        }
-        if (srcPath && i.originalSrc) {
+        } else if (srcPath && i.originalSrc) {
+
           if (i.originalSrc.startsWith("./") || i.originalSrc.startsWith("../")) {
+
             try {
+
               const classSource = readSource(pathJoin(srcPath, `${i.originalSrc}.js`))
+
               if (isJSViewDefinition(classSource)) {
                 rt = true
+                return
               }
+
               if (isUI5Control(classSource)) {
                 rt = true
+                return
               }
+
+              if (isReactComponent(classSource)) {
+                rt = false
+              } else {
+                rt = true
+              }
+
             } catch (error) {
               console.error(error)
               // module not found
             }
 
+          } else {
+
+            rt = false
+
           }
+
+        } else {
+
+          rt = false
+
         }
+
       }
     })
 

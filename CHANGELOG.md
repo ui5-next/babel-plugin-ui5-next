@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.6.3"></a>
+## [1.6.3](https://github.com/Soontao/babel-plugin-ui5-next/compare/v1.6.2...v1.6.3) (2019-07-26)
+
+
+### Bug Fixes
+
+* deep control import failed ([b43cd7a](https://github.com/Soontao/babel-plugin-ui5-next/commit/b43cd7a))
+
+
+
 <a name="1.6.2"></a>
 ## [1.6.2](https://github.com/Soontao/babel-plugin-ui5-next/compare/v1.6.1...v1.6.2) (2019-07-03)
 

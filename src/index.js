@@ -500,16 +500,41 @@ exports.default = babel => {
 
         var isViewImport = false;
 
-        var src = node.source.value; // related path in import statement
+        var src = node.source.value || ""; // related path in import statement
         var mOriginalSrc = node.source.value; // related path in import statement
 
+        var isImportCss = src.endsWith(".css")
 
         var isRelativeModule = src.startsWith("./") || src.startsWith("../");
 
         var isNonUi5Module = !src.startsWith("sap")
 
-        // is related source or third party lib
-        if (isRelativeModule || isNonUi5Module) {
+        // if import css, replace import as css load expression
+        if (isImportCss) {
+
+          // >>> from
+          // import "base.css"
+          // >>> to
+          // jQuery.sap.includeStyleSheet("base.css");
+
+          path.replaceWith(
+            t.expressionStatement(
+              t.callExpression(
+                t.memberExpression(
+                  t.memberExpression(
+                    t.identifier("jQuery"),
+                    t.identifier("sap")
+                  ),
+                  t.identifier("includeStyleSheet")
+                ),
+                [t.stringLiteral(src)]
+              )
+            )
+          );
+
+          return;
+        } else if (isRelativeModule || isNonUi5Module) {
+          // is related source or third party lib
           try {
             var sourcePath = pathJoin(currentFileAbsPath, src);
             var importedSource = readSource(`${sourcePath}.js`);

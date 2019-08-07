@@ -4,6 +4,7 @@
     "editor.formatOnSave": true,
     "editor.wordWrap": "on",
     "eslint.autoFixOnSave": true,
+    "javascript.validate.enable": false,
     "cSpell.words": [
         "jsfragment",
         "modulepath",

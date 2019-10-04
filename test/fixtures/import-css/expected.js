@@ -5,8 +5,6 @@ sap.ui.define("babel/test/test/fixtures/import-css/actual", ["./AppRouter"], fun
   var _default = {};
   jQuery.sap.includeStyleSheet("index.css");
   jQuery.sap.includeStyleSheet("react/theme/index.css");
-
-
   AppRouter.placeAt("content");
   return _default;
 })

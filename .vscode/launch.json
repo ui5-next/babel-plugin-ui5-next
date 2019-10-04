@@ -9,14 +9,13 @@
       "request": "launch",
       "name": "Mocha Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "preLaunchTask": "npm:build",
       "args": [
         "-u",
         "tdd",
         "--timeout",
         "999999",
         "--colors",
-        "--compilers",
-        "js:babel-register",
         "${workspaceFolder}/test"
       ],
       "internalConsoleOptions": "openOnSessionStart"

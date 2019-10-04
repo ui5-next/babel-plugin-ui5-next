@@ -8,6 +8,10 @@
 
 Next-generation syntax for SAP UI5
 
+## Version 7 BREAKING UPDATE
+
+- Limited by technical, will NOT compile ES6 classes to ES5 classes.
+
 ## Function
 
 - Convert ES6 class to UI5 class system
@@ -16,6 +20,7 @@ Next-generation syntax for SAP UI5
 - JSX support
 - Class decorator support
 - Support import CSS in javascript
+
 
 ## Usage
 

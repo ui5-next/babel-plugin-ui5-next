@@ -3,14 +3,13 @@
 sap.ui.define("babel/test/test/fixtures/es6-class-to-ui5-class/actual", ["sap/ui/JSView", "sap/m/Button"], function (JSView, Button) {
   var _default = {};
 
-  var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+  function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
   var AView = {
     init: function init() {
       JSView.prototype.init.apply(this, []);
     },
-    onPress: function onPress() {
-      // do nothing
+    onPress: function onPress() {// do nothing
     },
     createContent: function createContent() {
       return new Button({

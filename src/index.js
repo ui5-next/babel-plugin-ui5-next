@@ -593,20 +593,54 @@ exports.default = babel => {
         var assign;
         switch (path.node.type) {
           case "ExportDefaultDeclaration":
-            assign = t.assignmentExpression(
-              "=",
-              _default,
-              t.callExpression(
-                t.memberExpression(
-                  t.identifier("Object"),
-                  t.identifier("assign")
-                ),
-                [path.node.declaration, _default]
-              )
-            );
+            if (path.node.declaration) {
+              switch (path.node.declaration.type) {
+                case "ClassDeclaration":
+                  path.insertBefore(path.node.declaration)
+                  assign = t.assignmentExpression(
+                    "=",
+                    _default,
+                    t.callExpression(
+                      t.memberExpression(
+                        t.identifier("Object"),
+                        t.identifier("assign")
+                      ),
+                      [path.node.declaration.id, _default]
+                    )
+                  );
+                  break;
+                default:
+                  assign = t.assignmentExpression(
+                    "=",
+                    _default,
+                    t.callExpression(
+                      t.memberExpression(
+                        t.identifier("Object"),
+                        t.identifier("assign")
+                      ),
+                      [path.node.declaration, _default]
+                    )
+                  );
+                  break;
+              }
+
+            } else {
+              assign = t.assignmentExpression(
+                "=",
+                _default,
+                t.callExpression(
+                  t.memberExpression(
+                    t.identifier("Object"),
+                    t.identifier("assign")
+                  ),
+                  [path.node.declaration, _default]
+                )
+              );
+            }
+
             break;
           case "ExportNamedDeclaration":
-            if (path.node.declaration) {
+            if (path.node.declaration && path.node.declaration.declarations) {
               var exportId = path.node.declaration.declarations[0].id;
               var exportBody = path.node.declaration.declarations[0].init;
               assign = t.variableDeclaration("var", [
@@ -735,7 +769,7 @@ exports.default = babel => {
               );
             }
 
-            path.replaceWith(
+            path.insertBefore(
               t.variableDeclaration("var", [
                 t.variableDeclarator(
                   t.identifier(className),
@@ -747,7 +781,7 @@ exports.default = babel => {
               ])
             );
 
-            path.insertAfter(
+            path.insertBefore(
               t.expressionStatement(
                 t.assignmentExpression(
                   "=",
@@ -764,9 +798,12 @@ exports.default = babel => {
               )
             );
 
+            path.replaceWith(t.identifier(className))
+
             break;
           case "Fragment":
-            path.replaceWith(
+
+            path.insertBefore(
               t.variableDeclaration("var", [
                 t.variableDeclarator(
                   t.identifier(className),
@@ -794,6 +831,9 @@ exports.default = babel => {
                 )
               )
             );
+
+            path.replaceWith(t.identifier(className))
+
             break;
           default:
             expression = t.callExpression(

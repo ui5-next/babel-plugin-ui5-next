@@ -433,7 +433,10 @@ exports.default = babel => {
               children.push(c)
               break
             case "JSXExpressionContainer":
-              children.push(c.expression)
+              // jsx empty expression will trigger babel errors
+              if (c.expression.type != "JSXEmptyExpression") {
+                children.push(c.expression)
+              }
               break
           }
         })

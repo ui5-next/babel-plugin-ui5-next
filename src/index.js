@@ -588,13 +588,16 @@ exports.default = babel => {
     },
 
     ExportDeclaration: {
-      exit: path => {
+
+      enter: path => {
         const _default = t.identifier("_default");
         var assign;
+
         switch (path.node.type) {
           case "ExportDefaultDeclaration":
             if (path.node.declaration) {
               switch (path.node.declaration.type) {
+
                 case "ClassDeclaration":
                   path.insertBefore(path.node.declaration)
                   assign = t.assignmentExpression(
@@ -609,6 +612,7 @@ exports.default = babel => {
                     )
                   );
                   break;
+
                 default:
                   assign = t.assignmentExpression(
                     "=",
@@ -625,6 +629,7 @@ exports.default = babel => {
               }
 
             } else {
+
               assign = t.assignmentExpression(
                 "=",
                 _default,
@@ -636,25 +641,52 @@ exports.default = babel => {
                   [path.node.declaration, _default]
                 )
               );
+
             }
 
             break;
           case "ExportNamedDeclaration":
-            if (path.node.declaration && path.node.declaration.declarations) {
-              var exportId = path.node.declaration.declarations[0].id;
-              var exportBody = path.node.declaration.declarations[0].init;
-              assign = t.variableDeclaration("var", [
-                t.variableDeclarator(
-                  exportId,
-                  t.assignmentExpression(
+
+            if (path && path.node && path.node.declaration) {
+              switch (path.node.declaration.type) {
+                case "ClassDeclaration":
+                  var exportId = path.node.declaration.id
+                  var exportBody = path.node.declaration.body
+
+                  path.insertBefore(path.node.declaration)
+
+                  assign = t.assignmentExpression(
                     "=",
                     t.memberExpression(_default, exportId),
-                    exportBody
-                  )
-                )
-              ]);
+                    exportId
+                  );
+
+                  break;
+
+                case "VariableDeclaration":
+
+                  path.insertBefore(path.node.declaration)
+
+                  forEach(path.node.declaration.declarations, d => {
+                    if (d.id) {
+                      path.insertBefore(t.expressionStatement(t.assignmentExpression(
+                        "=",
+                        t.memberExpression(_default, d.id),
+                        d.id
+                      )))
+                    }
+                  })
+
+                  path.remove()
+
+                default:
+                  break;
+              }
             }
-            if (!isEmpty(path.node.specifiers)) {
+
+
+
+            if (path && path.node && !isEmpty(path.node.specifiers)) {
               assign = t.assignmentExpression(
                 "=",
                 _default,
@@ -677,9 +709,12 @@ exports.default = babel => {
           default:
             break;
         }
+
         if (assign) {
-          path.replaceWith(assign);
+          path.insertAfter(t.expressionStatement(assign));
+          path.remove()
         }
+
       }
     },
 
@@ -798,7 +833,7 @@ exports.default = babel => {
               )
             );
 
-            path.replaceWith(t.identifier(className))
+            path.remove()
 
             break;
           case "Fragment":
@@ -815,7 +850,7 @@ exports.default = babel => {
               ])
             );
 
-            path.insertAfter(
+            path.insertBefore(
               t.expressionStatement(
                 t.assignmentExpression(
                   "=",
@@ -832,19 +867,24 @@ exports.default = babel => {
               )
             );
 
-            path.replaceWith(t.identifier(className))
+            path.remove()
 
             break;
           default:
+
             expression = t.callExpression(
               t.identifier(superClassName + ".extend"),
               [t.stringLiteral(fullClassName), t.objectExpression(props)]
             );
-            path.replaceWith(
+
+            path.insertBefore(
               t.variableDeclaration("var", [
                 t.variableDeclarator(t.identifier(className), expression)
               ])
             );
+
+            path.remove()
+
             break;
         }
       }

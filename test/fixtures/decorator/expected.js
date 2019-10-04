@@ -32,7 +32,6 @@ sap.ui.define("babel/test/test/fixtures/decorator/actual", ["sap/ui/JSView", "sa
     }
   }));
   AView = sap.ui.jsview("babel.test.test.fixtures.decorator.actual", AView) || AView;
-  AView;
   _default = _extends(AView, _default);
   return _default;
 })

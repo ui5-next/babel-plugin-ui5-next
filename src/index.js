@@ -1,10 +1,10 @@
 const Path = require("path");
 const { concat, split, slice, join, filter, find, flatten, map, isEmpty, trim, forEach, replace, reduce } = require("lodash");
 const { readFileSync } = require("fs");
+const { types: t } = require("@babel/core")
 
 exports.default = babel => {
 
-  const { types: t } = babel;
   /**
    * Get extension name from path
    *
@@ -681,6 +681,21 @@ exports.default = babel => {
                   })
 
                   path.remove()
+                  break
+
+                case "TSEnumDeclaration":
+
+                  path.insertBefore(path.node.declaration)
+                  var { id } = path.node.declaration
+                  if (id) {
+                    path.insertBefore(t.expressionStatement(t.assignmentExpression(
+                      "=",
+                      t.memberExpression(_default, id),
+                      id
+                    )))
+                  }
+                  path.remove()
+                  break
 
                 default:
                   break;

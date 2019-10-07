@@ -8,6 +8,7 @@ sap.ui.define("babel/test/test/fixtures/es6-class-constructor/actual", ["sap/ui/
   var AView = {
     constructor: function constructor(v) {
       this._v = v;
+      new Button();
     },
     getControllerName: function getControllerName() {
       return "sap.ui.core.mvc.Controller";

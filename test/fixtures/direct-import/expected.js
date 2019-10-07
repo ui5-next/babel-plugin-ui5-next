@@ -4,6 +4,7 @@ sap.ui.define("babel/test/test/fixtures/direct-import/actual", ["babel-cli", "./
   var AppRouter = AppRouter.AppRouter;
   var name = babelpluginsyntaxdecorators.name;
   var _default = {};
+  console.log(name);
   AppRouter.placeAt("content");
   return _default;
 })

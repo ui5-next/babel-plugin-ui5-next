@@ -9,5 +9,8 @@
         "jsfragment",
         "modulepath",
         "namepath"
-    ]
+    ],
+    "files.associations": {
+        "**/test/ts-fixtures/**/*.ts*": "plaintext"
+    }
 }

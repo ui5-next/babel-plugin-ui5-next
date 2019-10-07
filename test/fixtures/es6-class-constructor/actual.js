@@ -6,6 +6,7 @@ export default class AView extends JSView {
 
   constructor(v) {
     this._v = v
+    new Button()
   }
 
 }

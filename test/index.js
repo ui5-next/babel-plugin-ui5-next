@@ -27,3 +27,26 @@ describe('Next-generation syntax for SAP UI5', () => {
     });
   });
 });
+
+describe('Next-generation typescript syntax for SAP UI5', () => {
+  const fixturesDir = path.join(__dirname, 'ts-fixtures');
+  fs.readdirSync(fixturesDir).map((caseName) => {
+    it(`should ${caseName.split('-').join(' ')}`, () => {
+      const fixtureDir = path.join(fixturesDir, caseName);
+      let actualPath = path.join(fixtureDir, 'actual.tsx');
+      if (!fs.existsSync(actualPath)) {
+        actualPath = path.join(fixtureDir, 'actual.ts');
+      }
+      const actual = transformFileSync(actualPath, config).code;
+      const expectedPath = path.join(fixtureDir, 'expected.js');
+      if (fs.existsSync(expectedPath)) {
+        const expected = fs.readFileSync(expectedPath).toString()
+        assert.equal(trim(actual), trim(expected));
+      } else {
+        fs.writeFileSync(expectedPath, actual)
+        assert.ok(true);
+      }
+    });
+  });
+});
+

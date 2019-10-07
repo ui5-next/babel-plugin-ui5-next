@@ -8,6 +8,9 @@ module.exports = {
         "namespace": "babel.test"
       }
     ],
+    [
+      "@babel/plugin-transform-typescript", { isTSX: true }
+    ],
     "@babel/plugin-syntax-jsx",
     "@babel/plugin-syntax-class-properties",
     "babel-plugin-transform-async-to-promises",

@@ -1,6 +1,6 @@
 const Path = require("path");
 const { concat, split, slice, join, filter, find, flatten, map, isEmpty, trim, forEach, replace, reduce } = require("lodash");
-const { readFileSync } = require("fs");
+const { readFileSync, existsSync } = require("fs");
 const { types: t } = require("@babel/core")
 
 exports.default = babel => {
@@ -24,8 +24,19 @@ exports.default = babel => {
     return Path.join(Path.dirname(currentFileAbsPath), targetRelativePath);
   };
 
+  /**
+   * read source from different type source
+   * 
+   * @param {string} path 
+   */
   const readSource = path => {
-    return readFileSync(path, { encoding: "utf8" })
+    const ext = find([".js", ".jsx", ".mjs", ".ts", ".tsx"], ext => existsSync(`${path}${ext}`))
+    if (ext) {
+      return readFileSync(`${path}${ext}`, { encoding: "utf8" })
+    } else {
+      return ""
+    }
+
   }
 
   const isJSViewDefinition = (str = "") => {
@@ -87,7 +98,7 @@ exports.default = babel => {
 
             try {
 
-              const classSource = readSource(pathJoin(srcPath, `${i.originalSrc}.js`))
+              const classSource = readSource(pathJoin(srcPath, `${i.originalSrc}`))
 
               if (isJSViewDefinition(classSource)) {
                 rt = true
@@ -536,11 +547,11 @@ exports.default = babel => {
           );
 
           return;
-        } else if (isRelativeModule || isNonUi5Module) {
+        } else if (isRelativeModule && isNonUi5Module) {
           // is related source or third party lib
           try {
             var sourcePath = pathJoin(currentFileAbsPath, src);
-            var importedSource = readSource(`${sourcePath}.js`);
+            var importedSource = readSource(`${sourcePath}`);
 
             if (isJSViewDefinition(importedSource)) {
               isViewImport = true;

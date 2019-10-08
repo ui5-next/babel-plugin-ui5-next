@@ -1,6 +1,6 @@
 "use strict";
 
-sap.ui.define("babel/test/test/fixtures/compile-ui5-component/actual", ["sap/ui/core/UIComponent", "sap/ui/model/json/JSONModel", "sap/ui/Device", "./fragments/HelloDialog", "./manifest"], function (UIComponent, JSONModel, Device, HelloDialog, manifest) {
+sap.ui.define("babel/test/test/fixtures/compile-ui5-component/actual", ["sap/ui/core/UIComponent", "sap/ui/model/json/JSONModel", "sap/ui/Device", "babel/test/test/fixtures/compile-ui5-component/fragments/HelloDialog", "babel/test/test/fixtures/compile-ui5-component/manifest"], function (UIComponent, JSONModel, Device, HelloDialog, manifest) {
   var createHelloDialog = HelloDialog.createHelloDialog;
   var manifest = manifest.manifest;
   var _default = {};

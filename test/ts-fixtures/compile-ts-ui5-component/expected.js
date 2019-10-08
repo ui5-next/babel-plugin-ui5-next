@@ -1,6 +1,6 @@
 "use strict";
 
-sap.ui.define("babel/test/test/ts-fixtures/compile-ts-ui5-component/actual", ["sap/ui/core/UIComponent", "sap/ui/model/json/JSONModel", "./manifest"], function (UIComponent, JSONModel, manifest) {
+sap.ui.define("babel/test/test/ts-fixtures/compile-ts-ui5-component/actual", ["sap/ui/core/UIComponent", "sap/ui/model/json/JSONModel", "babel/test/test/ts-fixtures/compile-ts-ui5-component/manifest"], function (UIComponent, JSONModel, manifest) {
   var manifest = manifest.manifest;
   var _default = {};
 

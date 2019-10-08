@@ -1,6 +1,6 @@
 "use strict";
 
-sap.ui.define("babel/test/test/fixtures/compile-ui5-control/actual", ["sap/ui/core/Control", "sap/m/Table", "sap/m/ColumnListItem", "sap/m/ObjectNumber", "sap/m/Column", "sap/m/Toolbar", "sap/m/Title", "sap/m/Text", "sap/m/ToolbarSpacer", "sap/m/SearchField", "sap/m/ObjectIdentifier", "sap/ui/model/json/JSONModel", "sap/ui/model/Filter", "sap/ui/model/FilterOperator", "../model/formatter"], function (Control, Table, ColumnListItem, ObjectNumber, Column, Toolbar, Title, Text, ToolbarSpacer, SearchField, ObjectIdentifier, JSONModel, Filter, FilterOperator, formatter) {
+sap.ui.define("babel/test/test/fixtures/compile-ui5-control/actual", ["sap/ui/core/Control", "sap/m/Table", "sap/m/ColumnListItem", "sap/m/ObjectNumber", "sap/m/Column", "sap/m/Toolbar", "sap/m/Title", "sap/m/Text", "sap/m/ToolbarSpacer", "sap/m/SearchField", "sap/m/ObjectIdentifier", "sap/ui/model/json/JSONModel", "sap/ui/model/Filter", "sap/ui/model/FilterOperator", "babel/test/test/fixtures/model/formatter"], function (Control, Table, ColumnListItem, ObjectNumber, Column, Toolbar, Title, Text, ToolbarSpacer, SearchField, ObjectIdentifier, JSONModel, Filter, FilterOperator, formatter) {
   var createFormatter = formatter.createFormatter;
   var _default = {};
   var InvoiceList = Control.extend("babel.test.test.fixtures.compile-ui5-control.actual", {

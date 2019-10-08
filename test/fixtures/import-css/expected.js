@@ -1,6 +1,6 @@
 "use strict";
 
-sap.ui.define("babel/test/test/fixtures/import-css/actual", ["./AppRouter"], function (AppRouter) {
+sap.ui.define("babel/test/test/fixtures/import-css/actual", ["babel/test/test/fixtures/import-css/AppRouter"], function (AppRouter) {
   var AppRouter = AppRouter.AppRouter;
   var _default = {};
   jQuery.sap.includeStyleSheet("index.css");

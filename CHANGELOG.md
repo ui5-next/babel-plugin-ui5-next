@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="7.2.1"></a>
+## [7.2.1](https://github.com/Soontao/babel-plugin-ui5-next/compare/v7.2.0...v7.2.1) (2019-10-08)
+
+
+### Bug Fixes
+
+* ts class detect & relative module detect ([f01801c](https://github.com/Soontao/babel-plugin-ui5-next/commit/f01801c))
+
+
+
 <a name="7.2.0"></a>
 # [7.2.0](https://github.com/Soontao/babel-plugin-ui5-next/compare/v7.1.2...v7.2.0) (2019-10-07)
 

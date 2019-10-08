@@ -807,9 +807,12 @@ exports.default = babel => {
           } else if (member.type == "ClassProperty") {
             if (member.key && member.value) {
               props.push(t.objectProperty(member.key, member.value));
-            } else {
-              console.warn(`Not support class member ${member.key} in ${className} `)
             }
+            // removed warning, class property will be processed by typescript transform
+            // 
+            // else {
+            //   console.warn(`Not support class member ${member.key} in ${className} `)
+            // }
           }
         });
 

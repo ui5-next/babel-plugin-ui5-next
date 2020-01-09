@@ -12,5 +12,8 @@
     ],
     "files.associations": {
         "**/test/ts-fixtures/**/*.ts*": "plaintext"
+    },
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
     }
 }

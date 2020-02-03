@@ -10,16 +10,16 @@ Next-generation syntax for SAP UI5
 
 ## Version 7 BREAKING UPDATE
 
-- Limited by technical, will NOT compile ES6 classes to ES5 classes.
+- Limited by technical, will NOT compile (pure) ES6 classes to ES5 classes.
 
 ## Features
 
-- Convert ES6 class to UI5 class system
-- Convert ES6 module system to UI5 module system
+- Convert ES6 class (inherited from UI5 classes) to UI5 class system
+- Convert ES6 module system (`import/export`) to UI5 module system (`sap.ui.define`)
 - Enhance `JSView` logic in import/export
 - JSX support
 - Typescript support
-- Class decorator support
+- Class decorator support (beta, dont use that please)
 - Support import CSS in javascript
 
 ## Usage

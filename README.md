@@ -3,13 +3,14 @@
 [![npm version](https://badge.fury.io/js/babel-plugin-ui5-next.svg)](https://badge.fury.io/js/babel-plugin-ui5-next)
 [![CircleCI](https://circleci.com/gh/ui5-next/babel-plugin-ui5-next.svg?style=shield)](https://circleci.com/gh/Soontao/babel-plugin-ui5-next)
 ![Github CI](https://github.com/ui5-next/babel-plugin-ui5-next/workflows/Github%20CI/badge.svg)
+[![codecov](https://codecov.io/gh/ui5-next/babel-plugin-ui5-next/branch/master/graph/badge.svg)](https://codecov.io/gh/ui5-next/babel-plugin-ui5-next)
 [![GitHub license](https://img.shields.io/github/license/Soontao/babel-plugin-ui5-next.svg)](https://github.com/Soontao/babel-plugin-ui5-next/blob/master/LICENSE)
 
 ![](https://openui5.org/images/OpenUI5_new_big_side.png)
 
 Next-generation syntax for SAP UI5
 
-## Version 7 BREAKING UPDATE
+## Limitation
 
 - Limited by technical, this plugin will NOT compile (pure) ES6 classes to ES5 classes.
 - Limited by technical, will not transform async function

@@ -55,15 +55,19 @@ workflows:
   version: 2
   main:
     jobs:
-      - deploy:
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore: /.*/
+
       - build:
           filters:
             tags:
               only: /.*/
             branches:
               only: /.*/
+
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/

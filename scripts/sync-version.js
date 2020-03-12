@@ -9,6 +9,6 @@ presetPackageJson.dependencies["babel-plugin-ui5-next"] = pluginPackageJson.vers
 
 fs.writeFileSync(
   path.join(__dirname, "../preset/package.json"),
-  JSON.stringify(presetPackageJson),
+  JSON.stringify(presetPackageJson, null, 2),
   { encoding: "UTF-8" }
 )

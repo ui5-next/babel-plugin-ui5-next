@@ -101,7 +101,8 @@
   },
   "standard-version": {
     "scripts": {
-      "postbump": "node sync-version.js"
+      "postbump": "node scripts/sync-version.js",
+      "precommit": "git add preset/*"
     }
   },
   "license": "MIT"

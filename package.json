@@ -8,7 +8,7 @@
   "devDependencies": {
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.5.5",
-    "@babel/plugin-check-constants": "^7.0.0-beta.38",
+    "@babel/helper-plugin-utils": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/plugin-proposal-decorators": "^7.0.0",
     "@babel/plugin-proposal-do-expressions": "^7.0.0",
@@ -49,17 +49,17 @@
     "@babel/plugin-transform-sticky-regex": "^7.0.0",
     "@babel/plugin-transform-template-literals": "^7.4.4",
     "@babel/plugin-transform-typescript": "^7.6.0",
-    "@babel/helper-plugin-utils": "^7.0.0",
     "@babel/plugin-transform-unicode-regex": "^7.0.0",
     "@babel/preset-env": "^7.5.5",
     "@babel/register": "^7.5.5",
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^7.0.1",
+    "babel-jest": "^25.1.0",
     "babel-plugin-transform-async-await": "^1.0.0",
     "babel-plugin-transform-async-to-promises": "^0.8.14",
     "babel-plugin-transform-es2015-typeof-symbol": "^6.6.0",
     "husky": "^1.1.2",
-    "mocha": "^7",
+    "jest": "^25.1.0",
     "standard-version": "^7"
   },
   "dependencies": {
@@ -67,20 +67,37 @@
   },
   "scripts": {
     "build": "babel src -d lib",
-    "test": "mocha",
+    "test": "jest",
     "test:watch": "npm run test -- --watch",
     "prepare": "npm run build",
     "release": "standard-version --commit-all --no-verify && git push --follow-tags origin master",
     "commitmsg": "commitlint -E HUSKY_GIT_PARAMS",
-    "precommit": "npm run build"
+    "precommit": "npm run build",
+    "coverage": "npm test -- --coverage --no-cache"
   },
   "keywords": [
-    "UI",
-    "5",
+    "UI5",
     "babel",
     "plugin",
     "Open",
     "babel-plugin"
   ],
+  "jest": {
+    "testTimeout": 30000,
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!**/node_modules/**"
+    ],
+    "coveragePathIgnorePatterns": [
+      "node_modules/",
+      "test/",
+      "lib/"
+    ],
+    "testEnvironment": "node",
+    "testRegex": "/test/index.js$"
+  },
   "license": "MIT"
 }

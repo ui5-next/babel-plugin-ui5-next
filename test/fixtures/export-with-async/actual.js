@@ -4,5 +4,4 @@ const fetchCurrentUserInformation = async () => {
   return body;
 };
 
-
 export { fetchCurrentUserInformation };

@@ -3,7 +3,7 @@ const path = require("path")
 module.exports = {
   "plugins": [
     [
-      path.join(__dirname, "../lib/index"),
+      path.join(__dirname, "../src/index"),
       {
         "namespace": "babel.test"
       }
@@ -13,7 +13,6 @@ module.exports = {
     ],
     "@babel/plugin-syntax-jsx",
     "@babel/plugin-syntax-class-properties",
-    "babel-plugin-transform-async-to-promises",
     "@babel/plugin-transform-template-literals",
     "@babel/plugin-transform-literals",
     "@babel/plugin-transform-function-name",
@@ -25,14 +24,11 @@ module.exports = {
     "@babel/plugin-transform-for-of",
     "@babel/plugin-transform-sticky-regex",
     "@babel/plugin-transform-unicode-regex",
-    "@babel/plugin-check-constants",
     "@babel/plugin-transform-spread",
     "@babel/plugin-transform-parameters",
     "@babel/plugin-transform-destructuring",
     "@babel/plugin-transform-block-scoping",
     "@babel/plugin-transform-typeof-symbol",
-    "@babel/plugin-transform-regenerator",
-    "@babel/plugin-transform-object-assign",
     "@babel/plugin-proposal-object-rest-spread",
     [
       "@babel/plugin-proposal-decorators",
@@ -40,6 +36,6 @@ module.exports = {
         "legacy": true
       }
     ],
-    "@babel/plugin-transform-react-jsx"
+    "@babel/plugin-transform-react-jsx",
   ]
 }

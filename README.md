@@ -12,6 +12,7 @@ Next-generation syntax for SAP UI5
 ## Version 7 BREAKING UPDATE
 
 - Limited by technical, this plugin will NOT compile (pure) ES6 classes to ES5 classes.
+- Limited by technical, will not transform async function
 
 ## Features
 
@@ -20,9 +21,9 @@ Next-generation syntax for SAP UI5
 - Enhance `JSView` logic in import/export
 - [JSX support](test/fixtures/jsx-support)
 - Typescript support
-- Class decorator support (beta, dont use that please)
+- Class decorator support (beta, don't use this feature please)
 - [Support import CSS in javascript](test/fixtures/import-css)
-- Full test cases (limited by test framework, can not export coverage)
+- Full test cases
 
 ## Usage
 

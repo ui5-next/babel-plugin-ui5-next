@@ -2,9 +2,6 @@
 
 sap.ui.define("babel/test/test/fixtures/jsview-import/actual", ["sap/ui/core/mvc/JSView"], function (JSView) {
   var _default = {};
-
-  function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
   var AView = {
     createContent: function createContent() {
       return new JSView({
@@ -19,6 +16,6 @@ sap.ui.define("babel/test/test/fixtures/jsview-import/actual", ["sap/ui/core/mvc
     }
   };
   AView = sap.ui.jsview("babel.test.test.fixtures.jsview-import.actual", AView) || AView;
-  _default = _extends(AView, _default);
+  _default = Object.assign(AView, _default);
   return _default;
 })

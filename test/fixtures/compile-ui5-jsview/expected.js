@@ -2,9 +2,6 @@
 
 sap.ui.define("babel/test/test/fixtures/compile-ui5-jsview/actual", ["sap/ui/core/mvc/JSView", "sap/m/Page", "sap/m/Button"], function (JSView, Page, Button) {
   var _default = {};
-
-  function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
   var App = {
     createContent: function createContent(controller) {
       var _this = this;
@@ -34,6 +31,6 @@ sap.ui.define("babel/test/test/fixtures/compile-ui5-jsview/actual", ["sap/ui/cor
     }
   };
   App = sap.ui.jsview("babel.test.test.fixtures.compile-ui5-jsview.actual", App) || App;
-  _default = _extends(App, _default);
+  _default = Object.assign(App, _default);
   return _default;
 })

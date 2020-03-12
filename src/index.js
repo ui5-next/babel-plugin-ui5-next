@@ -494,7 +494,7 @@ exports.default = babel => {
     },
 
     /**
-     * parse import statments & save it for module convertion
+     * parse import statements & save it for module transform
      */
     ImportDeclaration: {
       enter: path => {
@@ -660,7 +660,6 @@ exports.default = babel => {
 
             break;
           case "ExportNamedDeclaration":
-
             if (path && path.node && path.node.declaration) {
               switch (path.node.declaration.type) {
                 case "ClassDeclaration":
@@ -691,7 +690,6 @@ exports.default = babel => {
                     }
                   })
 
-                  path.remove()
                   break
 
                 case "TSEnumDeclaration":
@@ -705,7 +703,6 @@ exports.default = babel => {
                       id
                     )))
                   }
-                  path.remove()
                   break
 
                 default:
@@ -741,8 +738,9 @@ exports.default = babel => {
 
         if (assign) {
           path.insertAfter(t.expressionStatement(assign));
-          path.remove()
         }
+
+        path.remove()
 
       }
     },

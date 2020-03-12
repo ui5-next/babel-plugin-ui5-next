@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-ui5-next",
-  "version": "7.4.2",
+  "version": "7.4.3",
   "description": "The next generation UI5 babel preset",
   "author": {
     "name": "Theo Sun"
@@ -34,7 +34,7 @@
     "@babel/plugin-transform-typeof-symbol": "^7.2.0",
     "@babel/plugin-transform-typescript": "^7.6.0",
     "@babel/plugin-transform-unicode-regex": "^7.0.0",
-    "babel-plugin-ui5-next": "7.4.2"
+    "babel-plugin-ui5-next": "7.4.3"
   },
   "devDependencies": {
     "standard-version": "^7"

@@ -6,3 +6,6 @@ test
 .babelrc
 .circleci
 *lock*
+preset
+scripts
+.github

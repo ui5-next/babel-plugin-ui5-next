@@ -1,18 +1,10 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
+
 version: 2
 jobs:
   build:
     docker:
       # specify the version you desire here
       - image: circleci/node:8
-      
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
 
     working_directory: ~/repo
 
@@ -39,20 +31,21 @@ jobs:
   deploy:
       working_directory: ~/repo
       docker:
-        - image: circleci/node:8.9.1
+        - image: circleci/node:8
       steps:
         - checkout
         - run: npm install
         - run: npm run test # unit tests
         - run:
             name: Authenticate with registry
-            command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+            command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc # auth
         - run:
             name: Publish package
             command: npm publish
         - run: 
             name: Publish preset package
-            command: cd preset && npm publish
+            working_directory: ~/repo/preset # change directory
+            command: npm publish
 
 workflows:
   version: 2

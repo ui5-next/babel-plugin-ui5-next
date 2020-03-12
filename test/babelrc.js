@@ -1,41 +1,10 @@
-const path = require("path")
 
-module.exports = {
-  "plugins": [
-    [
-      path.join(__dirname, "../src/index"),
-      {
-        "namespace": "babel.test"
-      }
-    ],
-    [
-      "@babel/plugin-transform-typescript", { isTSX: true }
-    ],
-    "@babel/plugin-syntax-jsx",
-    "@babel/plugin-syntax-class-properties",
-    "@babel/plugin-transform-template-literals",
-    "@babel/plugin-transform-literals",
-    "@babel/plugin-transform-function-name",
-    "@babel/plugin-transform-arrow-functions",
-    "@babel/plugin-transform-block-scoped-functions",
-    "@babel/plugin-transform-shorthand-properties",
-    "@babel/plugin-transform-computed-properties",
-    "@babel/plugin-transform-duplicate-keys",
-    "@babel/plugin-transform-for-of",
-    "@babel/plugin-transform-sticky-regex",
-    "@babel/plugin-transform-unicode-regex",
-    "@babel/plugin-transform-spread",
-    "@babel/plugin-transform-parameters",
-    "@babel/plugin-transform-destructuring",
-    "@babel/plugin-transform-block-scoping",
-    "@babel/plugin-transform-typeof-symbol",
-    "@babel/plugin-proposal-object-rest-spread",
-    [
-      "@babel/plugin-proposal-decorators",
-      {
-        "legacy": true
-      }
-    ],
-    "@babel/plugin-transform-react-jsx",
-  ]
-}
+const namespace = "babel.test"
+const babelConfig = require("../preset")(null, { namespace })
+
+babelConfig.plugins[0] = [
+  require("../src"),
+  { namespace },
+]
+
+module.exports = babelConfig

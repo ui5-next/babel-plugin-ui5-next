@@ -70,7 +70,7 @@
     "test": "jest",
     "test:watch": "npm run test -- --watch",
     "prepare": "npm run build",
-    "release": "standard-version --commit-all --no-verify && git push --follow-tags origin master",
+    "release": "standard-version --commit-all --no-verify",
     "commitmsg": "commitlint -E HUSKY_GIT_PARAMS",
     "precommit": "npm run build",
     "coverage": "npm test -- --coverage --no-cache"
@@ -98,6 +98,11 @@
     ],
     "testEnvironment": "node",
     "testRegex": "/test/index.js$"
+  },
+  "standard-version": {
+    "scripts": {
+      "postbump": "node sync-version.js"
+    }
   },
   "license": "MIT"
 }

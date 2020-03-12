@@ -1,12 +1,10 @@
-# <img src="https://openui5.org/images/OpenUI5_new_big_side.png" height="25px" /> babel-plugin-ui5-next
+# <img src="https://openui5.org/images/OpenUI5_new_big_side.png" height="35px" /> babel-plugin-ui5-next
 
 [![npm](https://img.shields.io/npm/v/babel-plugin-ui5-next)](https://www.npmjs.com/package/babel-plugin-ui5-next)
 [![CircleCI](https://circleci.com/gh/ui5-next/babel-plugin-ui5-next.svg?style=shield)](https://circleci.com/gh/Soontao/babel-plugin-ui5-next)
 ![Github CI](https://github.com/ui5-next/babel-plugin-ui5-next/workflows/Github%20CI/badge.svg)
 [![codecov](https://codecov.io/gh/ui5-next/babel-plugin-ui5-next/branch/master/graph/badge.svg)](https://codecov.io/gh/ui5-next/babel-plugin-ui5-next)
 [![GitHub license](https://img.shields.io/github/license/Soontao/babel-plugin-ui5-next.svg)](https://github.com/Soontao/babel-plugin-ui5-next/blob/master/LICENSE)
-
-
 
 Next-generation syntax for SAP UI5
 

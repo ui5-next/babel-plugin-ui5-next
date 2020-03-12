@@ -146,11 +146,13 @@ exports.default = babel => {
      */
     CallExpression: {
       enter: innerPath => {
+
         const node = innerPath.node;
         if (node.callee.type === "Super") {
+
           if (!superClassName) {
             this.errorWithNode(
-              "The keyword 'super' can only used in a derrived class."
+              "The keyword 'super' can only used in a derived class."
             );
           }
 
@@ -169,7 +171,7 @@ exports.default = babel => {
         } else if (node.callee.object && node.callee.object.type === "Super") {
           if (!superClassName) {
             this.errorWithNode(
-              "The keyword 'super' can only used in a derrived class."
+              "The keyword 'super' can only used in a derived class."
             );
           }
           const identifier = t.identifier(
@@ -227,15 +229,16 @@ exports.default = babel => {
   };
 
   const visitor = {
+
     Program: {
       /**
-       * init with path related informations
+       * init with path related information
        */
       enter: (path, state) => {
         var { namespace } = state.opts;
 
         if (isEmpty(namespace)) {
-          throw new Error("You must set namesapce for babel-blugin-ui5-next !");
+          throw new Error("You must set namespace for babel-plugin-ui5-next! ");
         }
 
         const filePath = Path.resolve(path.hub.file.opts.filename);
@@ -601,139 +604,82 @@ exports.default = babel => {
       }
     },
 
-    ExportDeclaration: {
-
+    ExportNamedDeclaration: {
       enter: path => {
-        const _default = t.identifier("_default");
+
         var assign;
 
-        switch (path.node.type) {
-          case "ExportDefaultDeclaration":
-            if (path.node.declaration) {
-              switch (path.node.declaration.type) {
+        const _default = t.identifier("_default");
 
-                case "ClassDeclaration":
-                  path.insertBefore(path.node.declaration)
-                  assign = t.assignmentExpression(
-                    "=",
-                    _default,
-                    t.callExpression(
-                      t.memberExpression(
-                        t.identifier("Object"),
-                        t.identifier("assign")
-                      ),
-                      [path.node.declaration.id, _default]
-                    )
-                  );
-                  break;
+        if (path && path.node && path.node.declaration) {
+          switch (path.node.declaration.type) {
+            case "ClassDeclaration":
+              var exportId = path.node.declaration.id
+              var exportBody = path.node.declaration.body
 
-                default:
-                  assign = t.assignmentExpression(
-                    "=",
-                    _default,
-                    t.callExpression(
-                      t.memberExpression(
-                        t.identifier("Object"),
-                        t.identifier("assign")
-                      ),
-                      [path.node.declaration, _default]
-                    )
-                  );
-                  break;
-              }
-
-            } else {
+              path.insertBefore(path.node.declaration)
 
               assign = t.assignmentExpression(
                 "=",
-                _default,
-                t.callExpression(
-                  t.memberExpression(
-                    t.identifier("Object"),
-                    t.identifier("assign")
-                  ),
-                  [path.node.declaration, _default]
-                )
+                t.memberExpression(_default, exportId),
+                exportId
               );
 
-            }
+              break;
 
-            break;
-          case "ExportNamedDeclaration":
-            if (path && path.node && path.node.declaration) {
-              switch (path.node.declaration.type) {
-                case "ClassDeclaration":
-                  var exportId = path.node.declaration.id
-                  var exportBody = path.node.declaration.body
+            case "VariableDeclaration":
 
-                  path.insertBefore(path.node.declaration)
+              path.insertBefore(path.node.declaration)
 
-                  assign = t.assignmentExpression(
+              forEach(path.node.declaration.declarations, d => {
+                if (d.id) {
+                  path.insertBefore(t.expressionStatement(t.assignmentExpression(
                     "=",
-                    t.memberExpression(_default, exportId),
-                    exportId
-                  );
+                    t.memberExpression(_default, d.id),
+                    d.id
+                  )))
+                }
+              })
 
-                  break;
+              break
 
-                case "VariableDeclaration":
+            case "TSEnumDeclaration":
 
-                  path.insertBefore(path.node.declaration)
-
-                  forEach(path.node.declaration.declarations, d => {
-                    if (d.id) {
-                      path.insertBefore(t.expressionStatement(t.assignmentExpression(
-                        "=",
-                        t.memberExpression(_default, d.id),
-                        d.id
-                      )))
-                    }
-                  })
-
-                  break
-
-                case "TSEnumDeclaration":
-
-                  path.insertBefore(path.node.declaration)
-                  var { id } = path.node.declaration
-                  if (id) {
-                    path.insertBefore(t.expressionStatement(t.assignmentExpression(
-                      "=",
-                      t.memberExpression(_default, id),
-                      id
-                    )))
-                  }
-                  break
-
-                default:
-                  break;
+              path.insertBefore(path.node.declaration)
+              var { id } = path.node.declaration
+              if (id) {
+                path.insertBefore(t.expressionStatement(t.assignmentExpression(
+                  "=",
+                  t.memberExpression(_default, id),
+                  id
+                )))
               }
-            }
+              break
+
+            default:
+              break;
+          }
+        }
 
 
 
-            if (path && path.node && !isEmpty(path.node.specifiers)) {
-              assign = t.assignmentExpression(
-                "=",
-                _default,
-                t.callExpression(
-                  t.memberExpression(
-                    t.identifier("Object"),
-                    t.identifier("assign")
-                  ),
-                  [
-                    t.objectExpression(
-                      map(path.node.specifiers, spec => t.objectProperty(spec.exported, spec.local))
-                    ),
-                    _default
-                  ]
-                )
-              );
-            }
-
-            break;
-          default:
-            break;
+        if (path && path.node && !isEmpty(path.node.specifiers)) {
+          assign = t.assignmentExpression(
+            "=",
+            _default,
+            t.callExpression(
+              t.memberExpression(
+                t.identifier("Object"),
+                t.identifier("assign")
+              ),
+              [
+                t.objectExpression(
+                  map(path.node.specifiers, spec => t.objectProperty(spec.exported, spec.local))
+                ),
+                _default
+              ]
+            )
+          );
         }
 
         if (assign) {
@@ -745,8 +691,73 @@ exports.default = babel => {
       }
     },
 
+    ExportDefaultDeclaration: {
+
+      enter: path => {
+        const _default = t.identifier("_default");
+        var assign;
+
+        if (path.node.declaration) {
+          switch (path.node.declaration.type) {
+
+            case "ClassDeclaration":
+              path.insertBefore(path.node.declaration)
+              assign = t.assignmentExpression(
+                "=",
+                _default,
+                t.callExpression(
+                  t.memberExpression(
+                    t.identifier("Object"),
+                    t.identifier("assign")
+                  ),
+                  [path.node.declaration.id, _default]
+                )
+              );
+              break;
+
+            default:
+              assign = t.assignmentExpression(
+                "=",
+                _default,
+                t.callExpression(
+                  t.memberExpression(
+                    t.identifier("Object"),
+                    t.identifier("assign")
+                  ),
+                  [path.node.declaration, _default]
+                )
+              );
+              break;
+          }
+
+        } else {
+
+          assign = t.assignmentExpression(
+            "=",
+            _default,
+            t.callExpression(
+              t.memberExpression(
+                t.identifier("Object"),
+                t.identifier("assign")
+              ),
+              [path.node.declaration, _default]
+            )
+          );
+
+        }
+
+        if (assign) {
+          path.insertAfter(t.expressionStatement(assign));
+        }
+
+        path.remove()
+
+      }
+
+    },
+
     /**
-     * convert ES6 class definition to UI5 class defination
+     * convert ES6 class definition to UI5 class definition
      *
      * class A extend B {} > B.extend("A", {})
      */

@@ -1,4 +1,4 @@
-# <img src="https://openui5.org/images/OpenUI5_new_big_side.png" height="35px" /> babel-plugin-ui5-next
+# <img src="https://openui5.org/images/OpenUI5_new_big_side.png" height="25px" /> babel plugin ui5 next
 
 
 [![npm](https://img.shields.io/npm/v/babel-plugin-ui5-next?label=babel-plugin-ui5-next)](https://www.npmjs.com/package/babel-plugin-ui5-next)

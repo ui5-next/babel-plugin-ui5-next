@@ -6,7 +6,9 @@
     "name": "Theo Sun"
   },
   "scripts": {
-    "release": "standard-version --no-verify && git push --follow-tags origin master"
+    "release": "standard-version --no-verify && git push --follow-tags origin master",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "main": "index.js",
   "dependencies": {
@@ -34,7 +36,8 @@
     "@babel/plugin-transform-typeof-symbol": "^7.2.0",
     "@babel/plugin-transform-typescript": "^7.6.0",
     "@babel/plugin-transform-unicode-regex": "^7.0.0",
-    "babel-plugin-ui5-next": "7.4.3"
+    "babel-plugin-ui5-next": "7.4.3",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "standard-version": "^7"
@@ -43,5 +46,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/ui5-next/babel-plugin-ui5-next"
-  }
+  },
+  "snyk": true
 }

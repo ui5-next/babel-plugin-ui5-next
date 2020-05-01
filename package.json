@@ -63,17 +63,19 @@
     "standard-version": "^7"
   },
   "dependencies": {
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "snyk": "^1.316.1"
   },
   "scripts": {
     "build": "babel src -d lib",
     "test": "jest",
     "test:watch": "npm run test -- --watch",
-    "prepare": "npm run build",
+    "prepare": "npm run snyk-protect && npm run build",
     "release": "standard-version --commit-all --no-verify && git push --follow-tags origin master",
     "commitmsg": "commitlint -E HUSKY_GIT_PARAMS",
     "precommit": "npm run build",
-    "coverage": "npm test -- --coverage --no-cache"
+    "coverage": "npm test -- --coverage --no-cache",
+    "snyk-protect": "snyk protect"
   },
   "keywords": [
     "UI5",
@@ -105,5 +107,6 @@
       "precommit": "git add preset/*"
     }
   },
-  "license": "MIT"
+  "license": "MIT",
+  "snyk": true
 }

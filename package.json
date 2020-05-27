@@ -54,7 +54,7 @@
     "@babel/register": "^7.5.5",
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^7.0.1",
-    "babel-jest": "^25.1.0",
+    "babel-jest": "^26.0.1",
     "babel-plugin-transform-async-await": "^1.0.0",
     "babel-plugin-transform-async-to-promises": "^0.8.14",
     "babel-plugin-transform-es2015-typeof-symbol": "^6.6.0",

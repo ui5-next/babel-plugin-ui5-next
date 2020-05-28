@@ -60,7 +60,7 @@
     "babel-plugin-transform-es2015-typeof-symbol": "^6.6.0",
     "husky": "^1.1.2",
     "jest": "^25.1.0",
-    "standard-version": "^7"
+    "standard-version": "^8"
   },
   "dependencies": {
     "lodash": "^4.17.15"

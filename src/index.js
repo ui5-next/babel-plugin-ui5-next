@@ -1,5 +1,10 @@
 const Path = require("path");
-const { concat, split, slice, join, filter, find, flatten, map, isEmpty, trim, forEach, replace, reduce } = require("lodash");
+const { concat, split, join, filter, find, flatten, map, isEmpty, forEach, reduce } = require("@newdash/newdash-node");
+const replace = require("@newdash/newdash-node/replace").default;
+const trim = require("@newdash/newdash-node/trim").default;
+const slice = require("@newdash/newdash-node/slice").default;
+
+
 const { readFileSync, existsSync } = require("fs");
 const { types: t } = require("@babel/core")
 

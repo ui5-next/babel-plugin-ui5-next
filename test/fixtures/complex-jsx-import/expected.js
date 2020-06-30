@@ -10,7 +10,7 @@ sap.ui.define("babel/test/test/fixtures/complex-jsx-import/actual", ["sap/ui/JSV
         name: "1"
       });
       return new HTML({
-        value: React.createElement("div", {
+        value: /*#__PURE__*/React.createElement("div", {
           class: "nameStyle"
         }),
         content: [this._hideButton]

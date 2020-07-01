@@ -3,6 +3,11 @@ const { concat, split, join, filter, find, flatten, map, isEmpty, forEach, reduc
 const { readFileSync, existsSync } = require("fs");
 const { types: t } = require("@babel/core")
 
+/**
+ * 
+ * @param {import("@babel/core")} babel 
+ * @returns {{visitor:import("@babel/core").Visitor}}
+ */
 exports.default = babel => {
 
   /**

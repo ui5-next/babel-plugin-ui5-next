@@ -6,7 +6,7 @@ const { transformFileSync } = require("@babel/core")
 const config = require("./babelrc")
 
 function trim(str) {
-  return str.replace(/^\s+|\s+$/, '').replace(/\r\n/, "\n");
+  return str.replace(/[^\x00-\x7F]/g, "")
 }
 
 describe('Next-generation syntax for SAP UI5', () => {

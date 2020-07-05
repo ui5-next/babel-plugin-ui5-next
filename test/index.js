@@ -6,7 +6,7 @@ const { transformFileSync } = require("@babel/core")
 const config = require("./babelrc")
 
 function trim(str) {
-  return str.replace(/^\s+|\s+$/, '');
+  return str.replace(/^\s+|\s+$/, '').replace(/\r\n/, "\n");
 }
 
 describe('Next-generation syntax for SAP UI5', () => {
@@ -19,7 +19,7 @@ describe('Next-generation syntax for SAP UI5', () => {
       const expectedPath = path.join(fixtureDir, 'expected.js');
       if (fs.existsSync(expectedPath)) {
         const expected = fs.readFileSync(expectedPath).toString()
-        assert.equal(trim(actual), trim(expected));
+        expect(trim(actual)).toStrictEqual(trim(expected))
       } else {
         fs.writeFileSync(expectedPath, actual)
         assert.ok(true);
@@ -41,7 +41,7 @@ describe('Next-generation typescript syntax for SAP UI5', () => {
       const expectedPath = path.join(fixtureDir, 'expected.js');
       if (fs.existsSync(expectedPath)) {
         const expected = fs.readFileSync(expectedPath).toString()
-        assert.equal(trim(actual), trim(expected));
+        expect(trim(actual)).toStrictEqual(trim(expected))
       } else {
         fs.writeFileSync(expectedPath, actual)
         assert.ok(true);

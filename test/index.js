@@ -18,7 +18,7 @@ describe('Next-generation syntax for SAP UI5', () => {
       const actual = transformFileSync(actualPath, config).code;
       const expectedPath = path.join(fixtureDir, 'expected.js');
       if (fs.existsSync(expectedPath)) {
-        const expected = fs.readFileSync(expectedPath).toString()
+        const expected = fs.readFileSync(expectedPath, { encoding: "utf-8" })
         expect(trim(actual)).toStrictEqual(trim(expected))
       } else {
         fs.writeFileSync(expectedPath, actual)
@@ -40,7 +40,7 @@ describe('Next-generation typescript syntax for SAP UI5', () => {
       const actual = transformFileSync(actualPath, config).code;
       const expectedPath = path.join(fixtureDir, 'expected.js');
       if (fs.existsSync(expectedPath)) {
-        const expected = fs.readFileSync(expectedPath).toString()
+        const expected = fs.readFileSync(expectedPath, { encoding: "utf-8" })
         expect(trim(actual)).toStrictEqual(trim(expected))
       } else {
         fs.writeFileSync(expectedPath, actual)

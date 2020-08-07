@@ -65,7 +65,7 @@
     "standard-version": "^8"
   },
   "dependencies": {
-    "@newdash/newdash": "^5.8.0"
+    "@newdash/newdash": "^5.12.0"
   },
   "scripts": {
     "build": "babel src -d lib",

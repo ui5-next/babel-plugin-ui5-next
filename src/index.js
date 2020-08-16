@@ -779,7 +779,7 @@ exports.default = babel => {
 
         // if not extends from UI5 class
         if (!isUI5Class(node.superClass.name, state.imports)) {
-          return;
+        //   return;
         }
 
         /**

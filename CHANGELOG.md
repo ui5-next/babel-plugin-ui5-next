@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.4.6](https://github.com/Soontao/babel-plugin-ui5-next/compare/v7.4.5...v7.4.6) (2020-08-17)
+
+
+### Bug Fixes
+
+* error error ([b1b31b3](https://github.com/Soontao/babel-plugin-ui5-next/commit/b1b31b30c694274fa55521ce01bd6f4b00f59b64))
+
 ### [7.4.5](https://github.com/Soontao/babel-plugin-ui5-next/compare/v7.4.4...v7.4.5) (2020-08-17)
 
 

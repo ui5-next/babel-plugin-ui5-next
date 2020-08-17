@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.4.5](https://github.com/Soontao/babel-plugin-ui5-next/compare/v7.4.4...v7.4.5) (2020-08-17)
+
+
+### Bug Fixes
+
+* [#79](https://github.com/Soontao/babel-plugin-ui5-next/issues/79) change pure class processing ([aa08f4c](https://github.com/Soontao/babel-plugin-ui5-next/commit/aa08f4c3f94279c38d995fbd7ccf9b79fe926599))
+* upgrade @newdash/newdash from 5.11.0 to 5.12.0 ([#78](https://github.com/Soontao/babel-plugin-ui5-next/issues/78)) ([28e4641](https://github.com/Soontao/babel-plugin-ui5-next/commit/28e4641333a485bef6dfd3779163fb9d4c8e70b5))
+
 ### [7.4.4](https://github.com/Soontao/babel-plugin-ui5-next/compare/v7.4.3...v7.4.4) (2020-06-30)
 
 ### [7.4.3](https://github.com/Soontao/babel-plugin-ui5-next/compare/v7.4.2...v7.4.3) (2020-03-12)

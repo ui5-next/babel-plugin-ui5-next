@@ -15,7 +15,6 @@ describe('Next-generation syntax for SAP UI5 (Error)', () => {
     it(`should raise error when ${caseName.split('-').join(' ')}`, () => {
       const fixtureDir = path.join(fixturesDir, caseName);
       const actualPath = path.join(fixtureDir, 'actual.js');
-      transformFileSync(actualPath, config)
       expect(() => transformFileSync(actualPath, config)).toThrow()
     });
   });

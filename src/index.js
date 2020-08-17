@@ -769,6 +769,9 @@ exports.default = babel => {
     ClassDeclaration: {
       enter: path => {
         const state = path.state.ui5;
+        /**
+         * @type {import("@babel/core").types.ClassDeclaration}
+         */
         const node = path.node;
         const props = [];
 
@@ -801,7 +804,12 @@ exports.default = babel => {
 
         var decorators = node.decorators;
 
+
         forEach(node.body.body, member => {
+
+          if (member.static) {
+            throw path.buildCodeFrameError(`not support static class member: ${className}.${member?.key?.name}`)
+          }
 
           if (member.type === "ClassMethod") {
 
@@ -820,11 +828,6 @@ exports.default = babel => {
             if (member.key && member.value) {
               props.push(t.objectProperty(member.key, member.value));
             }
-            // removed warning, class property will be processed by typescript transform
-            // 
-            // else {
-            //   console.warn(`Not support class member ${member.key} in ${className} `)
-            // }
           }
         });
 

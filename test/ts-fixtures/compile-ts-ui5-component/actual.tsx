@@ -4,7 +4,7 @@ import { manifest } from "./manifest";
 
 export default class Component extends UIComponent {
 
-  static metadata = { manifest };
+  metadata = { manifest };
 
   public init() {
     super.init(this, arguments);

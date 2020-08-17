@@ -9,6 +9,19 @@ function trim(str) {
   return str.replace(/[^\x00-\x7F]/g, "")
 }
 
+describe('Next-generation syntax for SAP UI5 (Error)', () => {
+  const fixturesDir = path.join(__dirname, 'errors');
+  fs.readdirSync(fixturesDir).map((caseName) => {
+    it(`should raise error when ${caseName.split('-').join(' ')}`, () => {
+      const fixtureDir = path.join(fixturesDir, caseName);
+      const actualPath = path.join(fixtureDir, 'actual.js');
+      transformFileSync(actualPath, config)
+      expect(() => transformFileSync(actualPath, config)).toThrow()
+    });
+  });
+});
+
+
 describe('Next-generation syntax for SAP UI5', () => {
   const fixturesDir = path.join(__dirname, 'fixtures');
   fs.readdirSync(fixturesDir).map((caseName) => {

@@ -34,3 +34,5 @@ Next-generation syntax for SAP UI5
 Please `DO NOT` use this plugin directly, just use [the generator](https://github.com/Soontao/ui5g) to generate UI5 project with predefined config.
 
 ## [CHANGELOG](./CHANGELOG.md)
+
+## [LICENSE](./LICENSE)

@@ -764,7 +764,7 @@ exports.default = babel => {
     /**
      * convert ES6 class definition to UI5 class definition
      *
-     * class A extend B {} > B.extend("A", {})
+     * `class A extend B {}` > `B.extend("A", {})`
      */
     ClassDeclaration: {
       enter: path => {
@@ -772,20 +772,18 @@ exports.default = babel => {
         const node = path.node;
         const props = [];
 
-        // if not extends with class
-        if (isEmpty(node.superClass)) {
-          return;
-        }
-
-        // if not extends from UI5 class
-        if (!isUI5Class(node.superClass.name, state.imports)) {
-          return;
-        }
-
         /**
          * current class extends super name
          */
-        var superClassName = node.superClass.name;
+        var superClassName
+
+        if (isEmpty(node.superClass)) {
+          // with default super class name
+          superClassName = "sap.ui.base.Object"
+        } else {
+          superClassName = node.superClass.name;
+        }
+
 
         // super.init() => SuperClassName.prototype.init.apply(this,[]) ...
         path.traverse(classInnerCallSuperVisitor(superClassName));
